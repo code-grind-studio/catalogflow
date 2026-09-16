@@ -1,0 +1,131 @@
+# Configuration de l'app Shopify — CatalogFlow
+
+**En bref :** CatalogFlow communique avec l'API Admin de Shopify via le **Client ID +
+Secret** d'une app. On la crée une fois (≈ 15 minutes, sans coder), on l'installe sur sa
+boutique, on colle deux valeurs dans `.env.local` et c'est terminé.
+
+**Captures d'écran :** prises sur un vrai compte Shopify. L'interface est en français.
+Dans une autre langue, les libellés sont identiques au même endroit.
+
+**Ce qui a changé en 2026 (important) :** l'ancien flux « custom app → copier un jeton
+permanent `shpat_…` » n'existe plus. Shopify crée désormais les apps dans le
+**Dev Dashboard**, qui fournit un Client ID et un Secret ; le jeton d'accès est demandé
+par CatalogFlow elle-même et se renouvelle automatiquement (24 h). Aucun jeton à copier
+ni à faire tourner à la main.
+
+---
+
+## 1. Créer l'app dans le Dev Dashboard
+
+1. Dans l'admin Shopify : **Paramètres → Applications et canaux de vente → Développer des
+   applications**.
+
+   ![Paramètres → Développer des applications](screenshots/guide/01-shopify-apps-development.png)
+
+2. Cliquez sur **Développer des applications dans le Dev Dashboard**. Cela ouvre
+   `dev.shopify.com` (site séparé, même identifiant). Vous voyez la liste des apps de
+   votre organisation.
+
+   ![Liste des apps du Dev Dashboard](screenshots/guide/02-dev-dashboard-app-list.png)
+
+3. Cliquez sur **Créer une appli**.
+
+   ![Créer une appli](screenshots/guide/03-create-app-page.png)
+
+4. Choisissez **Démarrer depuis le Dev Dashboard** (pas « Démarrer avec Shopify CLI »),
+   saisissez un nom — par ex. `CatalogFlow` — et validez.
+
+   ![Nom de l'appli](screenshots/guide/04-app-name-typed.png)
+
+## 2. Donner les bonnes permissions (scopes)
+
+Shopify vous demande aussitôt de créer la **première version** de l'app : c'est là que
+vivent les permissions API.
+
+1. La page « Créer une version » s'ouvre :
+
+   ![Créer une version](screenshots/guide/05-create-version-scopes.png)
+
+2. Descendez jusqu'à **Accès à l'API → Portées** et saisissez exactement :
+
+   ```
+   read_products,write_products
+   ```
+
+   ![Portées](screenshots/guide/06-api-scopes.png)
+
+   > `read_products` = lire le catalogue, `write_products` = modifier titres,
+   > descriptions, prix, tailles/variantes, images. CatalogFlow n'a besoin de rien d'autre.
+
+3. Cliquez sur **Publier** (en haut à droite ou en bas), nommez la version (par ex.
+   `1.0.0`) et confirmez.
+
+   ![Publier la version](screenshots/guide/07-publish-version-modal.png)
+
+4. La version est active :
+
+   ![Version publiée](screenshots/guide/08-version-published.png)
+
+## 3. Installer l'app sur sa boutique (une seule fois)
+
+1. Revenez à l'**Aperçu** de l'app et cliquez sur **Installer l'appli** (carte
+   *Installations*).
+
+   ![Installer l'appli](screenshots/guide/10-app-overview-install.png)
+
+2. Shopify demande sur quelle boutique l'installer — choisissez la vôtre.
+
+   ![Choisir une boutique](screenshots/guide/11-store-selection.png)
+
+3. Vérifiez les permissions et cliquez sur **Installer**.
+
+   ![Consentement d'installation](screenshots/guide/12-install-consent.png)
+
+   > Shopify ajoute toujours une permission par défaut sur les *données des
+   > employés/collaborateurs* : elle n'a rien à voir avec CatalogFlow et apparaît pour
+   > toutes les apps.
+
+4. C'est fait — l'app apparaît dans l'admin de votre boutique :
+
+   ![Installée](screenshots/guide/13-app-installed-in-store.png)
+
+   Sans cette étape, Shopify répond `400 Oauth error app_not_installed` lorsque
+   CatalogFlow essaie de lire le catalogue.
+
+## 4. Copier les identifiants dans `.env.local`
+
+1. Dans le Dev Dashboard, ouvrez l'app → **Paramètres de l'appli** → **Identifiants** :
+   vous y trouvez **ID client** et **Secret**.
+
+   ![ID client et Secret](screenshots/guide/09-credentials.png)
+
+   - Cliquez sur l'icône de copie à côté de chaque valeur.
+   - Le Secret ne s'affiche en entier qu'une fois : si vous le perdez, cliquez sur
+     **Renouveler** et copiez le nouveau.
+
+2. Collez-les dans `.env.local` (le fichier se crée avec `cp .env.example .env.local`) :
+
+   ```bash
+   SHOPIFY_DOMAIN=votre-boutique.myshopify.com
+   SHOPIFY_CLIENT_ID=...
+   SHOPIFY_CLIENT_SECRET=...
+   ```
+
+   > **`SHOPIFY_DOMAIN` doit être le domaine `*.myshopify.com`**, pas votre domaine
+   > personnalisé. Vous le trouvez dans Paramètres → Domaines (ou dans la barre d'adresse
+   > d'une page admin : il a la forme `xxx-yyy.myshopify.com`).
+
+3. Redémarrez CatalogFlow. C'est tout : l'app demande son propre jeton de 24 h et le
+   renouvelle automatiquement. Pas de redirection OAuth, aucun jeton à coller ailleurs.
+
+---
+
+## Dépannage
+
+| Symptôme | Cause / solution |
+|---|---|
+| `400 Oauth error app_not_installed` | Vous avez sauté l'étape 3 — installez l'app sur votre boutique depuis le Dev Dashboard |
+| `Token exchange fallito (401)` | Client ID ou Secret erroné (recopiez, ou Renouvelez le secret) |
+| `Token exchange fallito (404)` | `SHOPIFY_DOMAIN` erroné : utilisez `xxx-yyy.myshopify.com`, sans `https://` et sans domaine personnalisé |
+| `GraphQL error: Access denied for products field` | La version publiée n'a pas `read_products`/`write_products` : modifiez la version, ajoutez les portées, publiez et réinstallez |
+| Catalogue vide dans l'interface | La boutique n'a pas de produits dans l'état attendu, ou le jeton appartient à une autre boutique |
