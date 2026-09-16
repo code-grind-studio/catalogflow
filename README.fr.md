@@ -224,12 +224,19 @@ docker compose up --build
 
 ## ☁️ Déploiement (optionnel)
 
-`scripts/deploy.sh` déploie sur **Vercel** et pousse les variables de `.env.local` vers le projet
-(nécessite `vercel login` une fois).
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcode-grind-studio%2Fcatalogflow&env=SHOPIFY_DOMAIN,SHOPIFY_CLIENT_ID,SHOPIFY_CLIENT_SECRET,CATALOG_USER_1_ID,CATALOG_USER_1_PASSWORD,SESSION_SECRET&envDescription=Shopify+Client+ID%2FSecret+%28see+docs%2FSHOPIFY-SETUP.md%29+and+the+login+user&envLink=https%3A%2F%2Fgithub.com%2Fcode-grind-studio%2Fcatalogflow%2Ftree%2Fmain%2Fdocs)
+
+Le bouton ci-dessus clone le projet dans votre compte Vercel et vous demande une par une les
+variables d'environnement (Shopify Client ID/Secret et l'utilisateur de connexion).
+
+Ou depuis le terminal, dans le dossier du projet :
+
+```bash
+bash scripts/deploy.sh     # déploie et pousse les variables de .env.local
+```
 
 Tout hébergeur qui exécute Node ou Docker fonctionne pareil : il suffit d'y définir les mêmes
 variables d'environnement.
-
 ---
 
 ## ⚙️ Comment ça marche

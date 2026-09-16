@@ -14,6 +14,12 @@ il versionamento segue [Semantic Versioning](https://semver.org/lang/it/).
 - Sezione Windows passo-passo (Node con winget, copia `.env.local`, avvio).
 - Riquadri rossi numerati sugli screenshot della guida (evidenziano cosa cliccare).
 
+### Corretto
+- Deploy su Vercel: con `output: "standalone"` il build remoto si interrompeva con
+  `ENOENT: .next/next-server.js.nft.json`. Ora standalone si attiva solo fuori da Vercel
+  (Docker continua a funzionare) e `.vercelignore` esclude build e docs dall'upload.
+- README: pulsante "Deploy with Vercel" con le variabili d'ambiente richieste.
+
 ### Modificato
 - L'installazione con agente AI è ora **in primo piano**: prima sezione dei README e avviso in
   cima alle tre guide di configurazione (prima era a metà pagina).
