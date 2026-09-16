@@ -6,10 +6,29 @@ Web app **self-hosted** per gestire il **catalogo prodotti di Shopify** senza pa
 dall'admin prodotto per prodotto: tutto il catalogo in un'unica tabella, modifica singola o
 in blocco, sistemazione di taglie e varianti, pulizia immagini e accesso condiviso con un socio.
 
-Nata per negozi gestiti da una o due persone — niente SaaS multi-tenant, niente database,
-niente pubblicazione sull'App Store di Shopify. Gira sul tuo computer o sul tuo server.
-
 **Licenza MIT.**
+
+---
+
+## 👥 A chi serve (e a chi no)
+
+**Serve a chi ha un catalogo grande** — centinaia o migliaia di prodotti — e ha bisogno di
+**organizzarlo in fretta** invece di aprire e salvare un prodotto alla volta.
+
+Serve in particolare se:
+
+- 🗂️ hai **centinaia o migliaia di prodotti** e l'admin di Shopify diventa lento solo a scorrere
+
+- ✏️ devi **applicare la stessa modifica a molti prodotti** (titoli, descrizioni, prezzi, tag, stato)
+
+- 📐 devi **sistemare le taglie** prodotto per prodotto (rinominare, riordinare, eliminare varianti)
+
+- 🖼️ devi **pulire le immagini** dei prodotti vecchi
+
+- 👥 siete **due persone** (titolare + socio) e volete ognuno il proprio accesso, senza account ed email
+
+**Non serve se** hai una ventina di prodotti: l'admin di Shopify basta e avanza.
+Non è un'app pubblica del Shopify App Store e non c'è nessun abbonamento.
 
 ---
 
@@ -33,13 +52,25 @@ niente pubblicazione sull'App Store di Shopify. Gira sul tuo computer o sul tuo 
 
 ---
 
+## ⚡ Installazione rapida con un agente AI (Claude Code, Cursor, Codex…)
+
+Il modo più veloce: **non fare i passaggi a mano**. Copia il prompt pronto e incollalo nel
+tuo agente AI dentro una cartella vuota — clona il progetto, installa le dipendenze, crea
+`.env.local`, avvia il server e ti guida nella creazione dell'app Shopify chiedendoti solo i
+due valori che non può recuperare da solo.
+
+👉 **[docs/AI-INSTALL-PROMPT.md](docs/AI-INSTALL-PROMPT.md)** — ~2 minuti di attenzione invece
+di 15 minuti di passaggi manuali.
+
+---
+
 ## 🧰 Requisiti
 
-- **Node.js 20+** — oppure Docker, se preferisci (vedi sotto)
+- **Node.js 20+** — oppure Docker, se lo usi già (vedi in fondo)
 
 - Uno **store Shopify** dove poter creare un'app (qualsiasi piano)
 
-- **15 minuti** per la configurazione Shopify iniziale
+- **15 minuti** per la configurazione Shopify iniziale (una volta sola) — o ~2 minuti con l'agente AI
 
 ---
 
@@ -58,6 +89,74 @@ impostati in `.env.local`.
 
 > 💡 **Su macOS** puoi anche fare doppio click su **`Avvia CatalogFlow.command`**: al primo
 > avvio installa le dipendenze, avvia il server e apre il browser.
+
+> 💡 **Su Windows** fai doppio click su **`Avvia CatalogFlow.bat`** — vedi la sezione Windows qui sotto.
+
+---
+
+## 🪟 Su Windows, passo per passo
+
+Non serve esperienza: sono cinque passaggi, tutti con il mouse tranne uno.
+
+**1. Installa Node.js 20** (una volta sola)
+
+Apri il **Terminale** di Windows (tasto destro sul menu Start → *Terminale* o *PowerShell*) e incolla:
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+```
+
+Chiudi e riapri il terminale, poi verifica con `node -v` (deve rispondere `v20` o superiore).
+
+**2. Scarica il progetto**
+
+Nella pagina GitHub del repo: pulsante verde **Code → Download ZIP**, poi estrai la cartella
+(dove vuoi, per esempio in `Documenti`). Se preferisci riga di comando:
+
+```powershell
+git clone https://github.com/code-grind-studio/catalogflow.git
+```
+
+**3. Installa le dipendenze**
+
+Apri il **Terminale nella cartella del progetto** (apri la cartella in Esplora file, poi tasto
+destro → *Apri nel terminale*) e incolla:
+
+```powershell
+npm install
+```
+
+**4. Crea il file delle impostazioni**
+
+Sempre nel terminale:
+
+```powershell
+copy .env.example .env.local
+notepad .env.local
+```
+
+Nel Blocco note riempi le voci (lascia pure vuote le `SHOPIFY_*` finché non hai fatto la
+configurazione Shopify):
+
+- `CATALOG_USER_1_ID` e `CATALOG_USER_1_PASSWORD` → l'utente con cui entrerai
+- `SESSION_SECRET` → una stringa a caso lunga; va benissimo questa:
+
+  ```powershell
+  -join ((48..57)+(97..102) | Get-Random -Count 64 | % {[char]$_})
+  ```
+
+Salva e chiudi il Blocco note.
+
+**5. Avvia**
+
+Doppio click su **`Avvia CatalogFlow.bat`** nella cartella del progetto (oppure, dal terminale:
+`npm run dev`). Si apre il browser su <http://localhost:3000>.
+
+Per fermarlo: chiudi la finestra nera del terminale. Per riavviarlo domani: di nuovo doppio
+click sul `.bat`.
+
+> 🪟 Windows difende il computer: la prima volta può chiedere il permesso del firewall
+> («Consenti accesso» su reti private) — serve per aprire la pagina su `localhost`.
 
 ---
 
@@ -101,17 +200,19 @@ Versione breve: crea l'app → pubblica una versione con gli scope
 
 ---
 
-## 🐳 Avvio con Docker
+## 🐳 Docker (solo se lo conosci già)
+
+> ⚠️ **Se non hai mai usato Docker, salta questa sezione**: per CatalogFlow non serve. L'avvio
+> normale (`npm run dev`, oppure il doppio click sul file di avvio) è più semplice e fa
+> esattamente la stessa cosa sul tuo computer.
+
+Docker serve solo se vuoi farlo girare su una macchina senza installare Node — un NAS, un
+server affittato, un vecchio portatile:
 
 ```bash
 cp .env.example .env.local   # riempilo prima
 docker compose up --build
 ```
-
-Apri <http://localhost:3000>.
-
-L'immagine costruisce un server Next.js standalone: non serve Node sull'host e gira su
-qualsiasi macchina con Docker — NAS, VPS, un portatile vecchio.
 
 ---
 
@@ -160,8 +261,9 @@ scripts/            helper deploy Vercel
 | `Token exchange fallito (404)` | `SHOPIFY_DOMAIN` deve essere `xxx-yyy.myshopify.com` |
 | La pagina di login si ricarica senza entrare | `SESSION_SECRET` mancante, o coppia ID/password che non combacia |
 | Catalogo vuoto | store sbagliato, o versione pubblicata senza `read_products` |
+| `npm` non riconosciuto su Windows | Node.js non è installato o il terminale va riaperto dopo l'installazione |
 
-Altri casi: [docs/SHOPIFY-SETUP.it.md → Problemi frequenti](docs/SHOPIFY-SETUP.it.md#problemi-frequenti).
+Altri casi: [docs/SHOPIFY-SETUP.it.md → Problemi frequenti](docs/SHOPIFY-SETUP.it.md#-problemi-frequenti).
 
 ---
 

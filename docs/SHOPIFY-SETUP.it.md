@@ -23,21 +23,21 @@ automaticamente ogni 24 ore — quindi non c'è nessun token da copiare o rigene
 
 **Vai in** Impostazioni → **App e canali di vendita → Sviluppa app**, nell'admin Shopify.
 
-![Impostazioni → Sviluppa app](screenshots/guide/01-shopify-apps-development.png)
+<img src="screenshots/guide/01-shopify-apps-development.png" alt="Impostazioni → Sviluppa app" width="880">
 
 **Clicca** *Sviluppa app nel Dev Dashboard*. Si apre `dev.shopify.com` — sito separato, stesso
 login. Vedi l'elenco delle app della tua organizzazione.
 
-![Elenco app Dev Dashboard](screenshots/guide/02-dev-dashboard-app-list.png)
+<img src="screenshots/guide/02-dev-dashboard-app-list.png" alt="Elenco app Dev Dashboard" width="880">
 
 **Clicca** *Crea un'app*.
 
-![Crea app](screenshots/guide/03-create-app-page.png)
+<img src="screenshots/guide/03-create-app-page.png" alt="Crea app" width="880">
 
 **Scegli** *Parti dal Dev Dashboard* (non *Parti con Shopify CLI*), scrivi un nome — per esempio
 `CatalogFlow` — e conferma.
 
-![Nome app](screenshots/guide/04-app-name-typed.png)
+<img src="screenshots/guide/04-app-name-typed.png" alt="Nome app" width="880">
 
 ---
 
@@ -48,7 +48,7 @@ API.
 
 **Si apre la pagina "Crea una versione":**
 
-![Crea versione](screenshots/guide/05-create-version-scopes.png)
+<img src="screenshots/guide/05-create-version-scopes.png" alt="Crea versione" width="880">
 
 **Scorri fino a** *Accesso all'API → Scope* e inserisci esattamente:
 
@@ -56,7 +56,7 @@ API.
 read_products,write_products
 ```
 
-![Scope](screenshots/guide/06-api-scopes.png)
+<img src="screenshots/guide/06-api-scopes.png" alt="Scope" width="880">
 
 > 🔎 `read_products` = leggere il catalogo, `write_products` = modificare titoli, descrizioni,
 > prezzi, taglie e varianti, immagini. CatalogFlow non serve altro.
@@ -64,11 +64,11 @@ read_products,write_products
 **Clicca** *Pubblica* (in alto a destra o in basso), dai un nome alla versione — per esempio
 `1.0.0` — e conferma.
 
-![Pubblica versione](screenshots/guide/07-publish-version-modal.png)
+<img src="screenshots/guide/07-publish-version-modal.png" alt="Pubblica versione" width="880">
 
 **La versione è attiva:**
 
-![Versione pubblicata](screenshots/guide/08-version-published.png)
+<img src="screenshots/guide/08-version-published.png" alt="Versione pubblicata" width="880">
 
 ---
 
@@ -76,22 +76,22 @@ read_products,write_products
 
 **Torna nella Panoramica dell'app e clicca** *Installa l'app* — nella scheda *Installazioni*.
 
-![Installa app](screenshots/guide/10-app-overview-install.png)
+<img src="screenshots/guide/10-app-overview-install.png" alt="Installa app" width="880">
 
 **Shopify chiede su quale store installarla** — scegli il tuo.
 
-![Scegli lo store](screenshots/guide/11-store-selection.png)
+<img src="screenshots/guide/11-store-selection.png" alt="Scegli lo store" width="880">
 
 **Controlla i permessi e clicca** *Installa*.
 
-![Consenso installazione](screenshots/guide/12-install-consent.png)
+<img src="screenshots/guide/12-install-consent.png" alt="Consenso installazione" width="880">
 
 > ℹ️ Shopify aggiunge sempre un permesso di default sui *dati dei dipendenti e collaboratori* —
 > non c'entra niente con CatalogFlow e compare per qualsiasi app.
 
 **Fatto — l'app compare nell'admin del tuo store:**
 
-![Installata](screenshots/guide/13-app-installed-in-store.png)
+<img src="screenshots/guide/13-app-installed-in-store.png" alt="Installata" width="880">
 
 > ⚠️ Senza questo passaggio Shopify risponde `400 Oauth error app_not_installed` quando
 > CatalogFlow prova a leggere il catalogo.
@@ -103,7 +103,7 @@ read_products,write_products
 **Nel Dev Dashboard apri l'app →** *Parametri dell'app* → *Credenziali*: trovi **ID client** e
 **Secret**.
 
-![ID client e Secret](screenshots/guide/09-credentials.png)
+<img src="screenshots/guide/09-credentials.png" alt="ID client e Secret" width="880">
 
 - Clicca l'icona di copia accanto a ciascun valore.
 

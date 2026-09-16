@@ -25,21 +25,21 @@ renouvelle automatiquement toutes les 24 heures — aucun jeton à copier ni à 
 **Allez dans** Shopify admin → **Paramètres → Applications et canaux de vente → Développer des
 applications**.
 
-![Paramètres → Développer des applications](screenshots/guide/01-shopify-apps-development.png)
+<img src="screenshots/guide/01-shopify-apps-development.png" alt="Paramètres → Développer des applications" width="880">
 
 **Cliquez sur** *Développer des applications dans le Dev Dashboard*. Cela ouvre `dev.shopify.com`
 — site séparé, même identifiant. Vous voyez la liste des apps de votre organisation.
 
-![Liste des apps du Dev Dashboard](screenshots/guide/02-dev-dashboard-app-list.png)
+<img src="screenshots/guide/02-dev-dashboard-app-list.png" alt="Liste des apps du Dev Dashboard" width="880">
 
 **Cliquez sur** *Créer une appli*.
 
-![Créer une appli](screenshots/guide/03-create-app-page.png)
+<img src="screenshots/guide/03-create-app-page.png" alt="Créer une appli" width="880">
 
 **Choisissez** *Démarrer depuis le Dev Dashboard* (pas *Démarrer avec Shopify CLI*), saisissez un
 nom — par exemple `CatalogFlow` — et validez.
 
-![Nom de l'appli](screenshots/guide/04-app-name-typed.png)
+<img src="screenshots/guide/04-app-name-typed.png" alt="Nom de l'appli" width="880">
 
 ---
 
@@ -50,7 +50,7 @@ permissions API.
 
 **La page « Créer une version » s'ouvre :**
 
-![Créer une version](screenshots/guide/05-create-version-scopes.png)
+<img src="screenshots/guide/05-create-version-scopes.png" alt="Créer une version" width="880">
 
 **Descendez jusqu'à** *Accès à l'API → Portées* et saisissez exactement :
 
@@ -58,7 +58,7 @@ permissions API.
 read_products,write_products
 ```
 
-![Portées](screenshots/guide/06-api-scopes.png)
+<img src="screenshots/guide/06-api-scopes.png" alt="Portées" width="880">
 
 > 🔎 `read_products` = lire le catalogue, `write_products` = modifier titres, descriptions, prix,
 > tailles et variantes, images. CatalogFlow n'a besoin de rien d'autre.
@@ -66,11 +66,11 @@ read_products,write_products
 **Cliquez sur** *Publier* (en haut à droite ou en bas), nommez la version — par exemple `1.0.0` —
 et confirmez.
 
-![Publier la version](screenshots/guide/07-publish-version-modal.png)
+<img src="screenshots/guide/07-publish-version-modal.png" alt="Publier la version" width="880">
 
 **La version est active :**
 
-![Version publiée](screenshots/guide/08-version-published.png)
+<img src="screenshots/guide/08-version-published.png" alt="Version publiée" width="880">
 
 ---
 
@@ -78,22 +78,22 @@ et confirmez.
 
 **Revenez à l'Aperçu de l'app et cliquez sur** *Installer l'appli* — carte *Installations*.
 
-![Installer l'appli](screenshots/guide/10-app-overview-install.png)
+<img src="screenshots/guide/10-app-overview-install.png" alt="Installer l'appli" width="880">
 
 **Shopify demande sur quelle boutique l'installer** — choisissez la vôtre.
 
-![Choisir une boutique](screenshots/guide/11-store-selection.png)
+<img src="screenshots/guide/11-store-selection.png" alt="Choisir une boutique" width="880">
 
 **Vérifiez les permissions et cliquez sur** *Installer*.
 
-![Consentement d'installation](screenshots/guide/12-install-consent.png)
+<img src="screenshots/guide/12-install-consent.png" alt="Consentement d'installation" width="880">
 
 > ℹ️ Shopify ajoute toujours une permission par défaut sur les *données des employés et
 > collaborateurs* — elle n'a rien à voir avec CatalogFlow et apparaît pour toutes les apps.
 
 **C'est fait — l'app apparaît dans l'admin de votre boutique :**
 
-![Installée](screenshots/guide/13-app-installed-in-store.png)
+<img src="screenshots/guide/13-app-installed-in-store.png" alt="Installée" width="880">
 
 > ⚠️ Sans cette étape, Shopify répond `400 Oauth error app_not_installed` lorsque CatalogFlow
 > essaie de lire le catalogue.
@@ -105,7 +105,7 @@ et confirmez.
 **Dans le Dev Dashboard, ouvrez l'app →** *Paramètres de l'appli* → *Identifiants* : vous y
 trouvez **ID client** et **Secret**.
 
-![ID client et Secret](screenshots/guide/09-credentials.png)
+<img src="screenshots/guide/09-credentials.png" alt="ID client et Secret" width="880">
 
 - Cliquez sur l'icône de copie à côté de chaque valeur.
 

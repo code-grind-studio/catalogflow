@@ -3,13 +3,32 @@
 **🇬🇧 English** · [🇮🇹 Italiano](README.it.md) · [🇫🇷 Français](README.fr.md)
 
 A **self-hosted web app** to manage a **Shopify product catalog** without clicking through
-the admin product by product: browse the whole catalog in one table, edit single products
-or dozens at once, fix sizes and variants, clean up images, and share access with a partner.
-
-Built for small stores run by one or two people — no multi-tenant SaaS, no database, no
-Shopify App Store listing. You run it on your own machine or on your own server.
+the admin product by product: browse the whole catalog in one table, edit single products or
+dozens at once, fix sizes and variants, clean up images, and share access with a partner.
 
 **MIT licensed.**
+
+---
+
+## 👥 Who it's for (and who it isn't)
+
+**It's for shops with a big catalog** — hundreds or thousands of products — that need to
+**get organised fast** instead of opening and saving one product at a time.
+
+It makes sense especially if:
+
+- 🗂️ you have **hundreds or thousands of products** and scrolling the Shopify admin is already slow
+
+- ✏️ you need to **apply the same change to many products** (titles, descriptions, prices, tags, status)
+
+- 📐 you need to **fix sizes** product by product (rename, reorder, delete variants)
+
+- 🖼️ you need to **clean up the images** of old products
+
+- 👥 there are **two of you** (owner + partner) and each wants their own login, without accounts or emails
+
+**It's not for you if** you have a couple dozen products: the Shopify admin is enough.
+It's not a public Shopify App Store app and there is no subscription.
 
 ---
 
@@ -33,13 +52,25 @@ Shopify App Store listing. You run it on your own machine or on your own server.
 
 ---
 
+## ⚡ Fast install with an AI agent (Claude Code, Cursor, Codex…)
+
+The quickest way: **don't do the steps by hand.** Copy the ready-made prompt and paste it into
+your AI coding agent inside an empty folder — it clones the project, installs the dependencies,
+creates `.env.local`, starts the server and walks you through the Shopify app creation, asking
+only for the two values it cannot get by itself.
+
+👉 **[docs/AI-INSTALL-PROMPT.md](docs/AI-INSTALL-PROMPT.md)** — about 2 minutes of your
+attention instead of 15 minutes of manual steps.
+
+---
+
 ## 🧰 Requirements
 
-- **Node.js 20+** — or Docker, if you prefer (see below)
+- **Node.js 20+** — or Docker, if you already use it (see the bottom of this page)
 
 - A **Shopify store** where you can create an app (any plan)
 
-- **15 minutes** for the one-time Shopify app setup
+- **15 minutes** for the one-time Shopify app setup — or ~2 minutes with the AI agent
 
 ---
 
@@ -58,6 +89,74 @@ Open <http://localhost:3000> and log in with the `CATALOG_USER_1_ID` and
 
 > 💡 **On macOS** you can also double-click **`Avvia CatalogFlow.command`**: it installs the
 > dependencies on the first run, starts the server and opens the browser.
+
+> 💡 **On Windows** double-click **`Avvia CatalogFlow.bat`** — see the Windows section below.
+
+---
+
+## 🪟 On Windows, step by step
+
+No experience needed: five steps, all with the mouse except one.
+
+**1. Install Node.js 20** (once)
+
+Open the Windows **Terminal** (right-click the Start menu → *Terminal* or *PowerShell*) and paste:
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+```
+
+Close and reopen the terminal, then check with `node -v` (it should answer `v20` or higher).
+
+**2. Download the project**
+
+On the repo's GitHub page: green **Code → Download ZIP**, then unzip the folder wherever you
+like (for example in `Documents`). Or, from the command line:
+
+```powershell
+git clone https://github.com/code-grind-studio/catalogflow.git
+```
+
+**3. Install the dependencies**
+
+Open a **terminal inside the project folder** (open the folder in File Explorer, then right-click
+→ *Open in Terminal*) and paste:
+
+```powershell
+npm install
+```
+
+**4. Create the settings file**
+
+Still in the terminal:
+
+```powershell
+copy .env.example .env.local
+notepad .env.local
+```
+
+Fill in the file with Notepad (leave the `SHOPIFY_*` lines empty until you've done the Shopify
+setup):
+
+- `CATALOG_USER_1_ID` and `CATALOG_USER_1_PASSWORD` → the login you'll use
+- `SESSION_SECRET` → any long random string; this one is fine:
+
+  ```powershell
+  -join ((48..57)+(97..102) | Get-Random -Count 64 | % {[char]$_})
+  ```
+
+Save and close Notepad.
+
+**5. Start it**
+
+Double-click **`Avvia CatalogFlow.bat`** in the project folder (or run `npm run dev` from the
+terminal). The browser opens on <http://localhost:3000>.
+
+To stop it: close the black terminal window. To start it again tomorrow: double-click the `.bat`
+again.
+
+> 🪟 Windows protects your computer: the first time it may ask for firewall permission
+> ("Allow access" on private networks) — that's what lets the page answer on `localhost`.
 
 ---
 
@@ -101,17 +200,19 @@ Short version: create the app → publish a version with the scopes
 
 ---
 
-## 🐳 Run with Docker
+## 🐳 Docker (only if you already know it)
+
+> ⚠️ **If you have never used Docker, skip this section**: CatalogFlow doesn't need it. The
+> normal start (`npm run dev`, or the launcher file) is simpler and does exactly the same thing
+> on your computer.
+
+Docker is only worth it if you want to run it on a machine without installing Node — a NAS, a
+rented server, an old laptop:
 
 ```bash
 cp .env.example .env.local   # fill it in first
 docker compose up --build
 ```
-
-Open <http://localhost:3000>.
-
-The image builds a Next.js standalone server: no Node installation needed on the host, and
-it runs on any machine with Docker — NAS, VPS, an old laptop.
 
 ---
 
@@ -159,8 +260,9 @@ scripts/            Vercel deploy helper
 | `Token exchange fallito (404)` | `SHOPIFY_DOMAIN` must be `xxx-yyy.myshopify.com` |
 | Login page reloads without entering | `SESSION_SECRET` missing, or the ID/password pair doesn't match |
 | Empty catalog | wrong store, or the version was published without `read_products` |
+| `npm` not recognised on Windows | Node.js isn't installed, or the terminal needs to be reopened |
 
-More cases: [docs/SHOPIFY-SETUP.md → Troubleshooting](docs/SHOPIFY-SETUP.md#troubleshooting).
+More cases: [docs/SHOPIFY-SETUP.md → Troubleshooting](docs/SHOPIFY-SETUP.md#-troubleshooting).
 
 ---
 

@@ -23,21 +23,21 @@ a Secret. The access token is requested by CatalogFlow itself and renews automat
 
 **Go to** Shopify admin → **Settings → Apps and sales channels → Develop apps**.
 
-![Settings → Develop apps](screenshots/guide/01-shopify-apps-development.png)
+<img src="screenshots/guide/01-shopify-apps-development.png" alt="Settings → Develop apps" width="880">
 
 **Click** *Develop apps in the Dev Dashboard*. This opens `dev.shopify.com` — a separate site,
 same login. You'll see the list of apps of your organisation.
 
-![Dev Dashboard app list](screenshots/guide/02-dev-dashboard-app-list.png)
+<img src="screenshots/guide/02-dev-dashboard-app-list.png" alt="Dev Dashboard app list" width="880">
 
 **Click** *Create app*.
 
-![Create app](screenshots/guide/03-create-app-page.png)
+<img src="screenshots/guide/03-create-app-page.png" alt="Create app" width="880">
 
 **Choose** *Start from Dev Dashboard* (not *Start with Shopify CLI*), type a name — for example
 `CatalogFlow` — and confirm.
 
-![App name](screenshots/guide/04-app-name-typed.png)
+<img src="screenshots/guide/04-app-name-typed.png" alt="App name" width="880">
 
 ---
 
@@ -48,7 +48,7 @@ permissions live.
 
 **The "Create a version" page opens:**
 
-![Create version](screenshots/guide/05-create-version-scopes.png)
+<img src="screenshots/guide/05-create-version-scopes.png" alt="Create version" width="880">
 
 **Scroll to** *API access → Scopes* and enter exactly:
 
@@ -56,18 +56,18 @@ permissions live.
 read_products,write_products
 ```
 
-![Scopes](screenshots/guide/06-api-scopes.png)
+<img src="screenshots/guide/06-api-scopes.png" alt="Scopes" width="880">
 
 > 🔎 `read_products` = read the catalog, `write_products` = edit titles, descriptions, prices,
 > sizes and variants, images. CatalogFlow needs nothing else.
 
 **Click** *Publish* (top right or bottom), name the version — for example `1.0.0` — and confirm.
 
-![Publish version](screenshots/guide/07-publish-version-modal.png)
+<img src="screenshots/guide/07-publish-version-modal.png" alt="Publish version" width="880">
 
 **The version is now active:**
 
-![Version published](screenshots/guide/08-version-published.png)
+<img src="screenshots/guide/08-version-published.png" alt="Version published" width="880">
 
 ---
 
@@ -75,22 +75,22 @@ read_products,write_products
 
 **Back to the app Overview, click** *Install app* — in the *Installations* card.
 
-![Install app](screenshots/guide/10-app-overview-install.png)
+<img src="screenshots/guide/10-app-overview-install.png" alt="Install app" width="880">
 
 **Shopify asks which store to install it on** — pick yours.
 
-![Choose a store](screenshots/guide/11-store-selection.png)
+<img src="screenshots/guide/11-store-selection.png" alt="Choose a store" width="880">
 
 **Review the permissions and click** *Install*.
 
-![Install consent](screenshots/guide/12-install-consent.png)
+<img src="screenshots/guide/12-install-consent.png" alt="Install consent" width="880">
 
 > ℹ️ Shopify always adds one default permission about *staff and collaborator data* — it has
 > nothing to do with CatalogFlow and appears for every app.
 
 **Done — the app appears in your store admin:**
 
-![Installed](screenshots/guide/13-app-installed-in-store.png)
+<img src="screenshots/guide/13-app-installed-in-store.png" alt="Installed" width="880">
 
 > ⚠️ Without this step Shopify answers `400 Oauth error app_not_installed` when CatalogFlow
 > tries to read the catalog.
@@ -102,7 +102,7 @@ read_products,write_products
 **In the Dev Dashboard open the app →** *App settings* → *Credentials*: you'll find **Client ID**
 and **Secret**.
 
-![Client ID and Secret](screenshots/guide/09-credentials.png)
+<img src="screenshots/guide/09-credentials.png" alt="Client ID and Secret" width="880">
 
 - Click the copy icon next to each value.
 

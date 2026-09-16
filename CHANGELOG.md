@@ -6,6 +6,18 @@ il versionamento segue [Semantic Versioning](https://semver.org/lang/it/).
 
 ## [Unreleased]
 
+### Aggiunto
+- `docs/AI-INSTALL-PROMPT.md`: prompt pronto per far fare l'installazione a un agente AI
+  (Claude Code, Cursor, Codex…), con la sezione "installazione rapida" nei README.
+- `Avvia CatalogFlow.bat`: avvio con doppio click su Windows.
+- Sezione "A chi serve (e a chi no)" nei README: catalogo grande, modifiche in massa.
+- Sezione Windows passo-passo (Node con winget, copia `.env.local`, avvio).
+- Riquadri rossi numerati sugli screenshot della guida (evidenziano cosa cliccare).
+
+### Modificato
+- Guide di configurazione: immagini con larghezza fissa (880px) invece che a piena pagina.
+- Docker declassato a opzione avanzata, con avviso esplicito di saltarla se non si conosce.
+
 ## [1.0.0] - 2026-09-16
 
 ### Aggiunto
