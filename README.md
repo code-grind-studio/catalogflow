@@ -1,14 +1,20 @@
+<div align="center">
+
 # 🛍️ CatalogFlow
 
-**🇬🇧 English** · [🇮🇹 Italiano](README.it.md) · [🇫🇷 Français](README.fr.md)
+**Your whole Shopify catalog in one table — not one product at a time.**
 
-A **self-hosted web app** to manage a **Shopify product catalog** without clicking through
-the admin product by product: browse the whole catalog in one table, edit single products or
-dozens at once, fix sizes and variants, clean up images, and share access with a partner.
+A self-hosted web app for shops with hundreds or thousands of products: bulk edits, sizes and variants, image cleanup, and a login per person. No subscription, no database, nothing leaves your server.
 
-**MIT licensed.**
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](https://nodejs.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org) [![Shopify Admin API](https://img.shields.io/badge/Shopify-Admin%20API%202025--01-95BF47.svg)](docs/SHOPIFY-SETUP.md) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
----
+**[⚡ 2-minute AI install](docs/AI-INSTALL-PROMPT.md)** · **[📖 Shopify setup guide](docs/SHOPIFY-SETUP.md)** · **[🚀 Quick start](#-quick-start)** · **[🐳 Docker](#-docker-only-if-you-already-know-it)**
+
+🇬🇧 **English** · [🇮🇹 Italiano](README.it.md) · [🇫🇷 Français](README.fr.md)
+
+![CatalogFlow — the whole catalog in one table](docs/screenshots/hero-catalog.png)
+
+</div>
 
 ## ⚡⚡ Install in ~2 minutes (recommended): let Claude Code do it
 
@@ -274,6 +280,16 @@ scripts/            Vercel deploy helper
 | `npm` not recognised on Windows | Node.js isn't installed, or the terminal needs to be reopened |
 
 More cases: [docs/SHOPIFY-SETUP.md → Troubleshooting](docs/SHOPIFY-SETUP.md#-troubleshooting).
+
+---
+
+## 🤝 Contributing
+
+Issues and pull requests are welcome. The most useful bug report says what you did, what you
+expected and the exact error message (the terminal output, or the red box in the browser).
+
+The project is deliberately small — one Next.js app, no extra layers — so a patch is usually a
+few lines. For anything bigger, open an issue first: it's quicker than rewriting a large PR.
 
 ---
 

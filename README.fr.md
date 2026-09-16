@@ -1,14 +1,20 @@
+<div align="center">
+
 # 🛍️ CatalogFlow
 
-[🇬🇧 English](README.md) · [🇮🇹 Italiano](README.it.md) · **🇫🇷 Français**
+**Tout votre catalogue Shopify dans un seul tableau — pas produit par produit.**
 
-Une web app **auto-hébergée** pour gérer le **catalogue produits Shopify** sans passer par
-l'admin produit par produit : tout le catalogue dans un seul tableau, modification unitaire ou
-en masse, gestion des tailles et variantes, nettoyage des images et accès partagé avec un associé.
+Une web app auto-hébergée pensée pour les boutiques de plusieurs centaines ou milliers de produits : modifications en masse, tailles et variantes, nettoyage des images et un identifiant par personne. Pas d'abonnement, pas de base de données, aucune donnée ne quitte votre serveur.
 
-**Licence MIT.**
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](https://nodejs.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org) [![Shopify Admin API](https://img.shields.io/badge/Shopify-Admin%20API%202025--01-95BF47.svg)](docs/SHOPIFY-SETUP.fr.md) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
----
+**[⚡ Installation IA en ~2 minutes](docs/AI-INSTALL-PROMPT.md)** · **[📖 Guide Shopify](docs/SHOPIFY-SETUP.fr.md)** · **[🚀 Démarrage rapide](#-démarrage-rapide)** · **[🐳 Docker](#-docker-seulement-si-vous-le-connaissez-déjà)**
+
+[🇬🇧 English](README.md) · [🇮🇹 Italiano](README.it.md) · 🇫🇷 **Français**
+
+![CatalogFlow — tout le catalogue dans un seul tableau](docs/screenshots/hero-catalog.png)
+
+</div>
 
 ## ⚡⚡ Installation en ~2 minutes (recommandée) : laissez faire Claude Code
 
@@ -278,6 +284,18 @@ scripts/            helper de déploiement Vercel
 | `npm` non reconnu sous Windows | Node.js n'est pas installé, ou le terminal doit être rouvert |
 
 Autres cas : [docs/SHOPIFY-SETUP.fr.md → Dépannage](docs/SHOPIFY-SETUP.fr.md#-dépannage).
+
+---
+
+## 🤝 Contribuer
+
+Les issues et les pull requests sont bienvenues. Le rapport de bug le plus utile indique ce que
+vous avez fait, ce que vous attendiez et le message d'erreur exact (la sortie du terminal ou
+l'encadré rouge dans le navigateur).
+
+Le projet est volontairement petit — une seule app Next.js, sans couche supplémentaire — donc un
+correctif fait souvent quelques lignes. Pour quelque chose de plus gros, ouvrez d'abord une
+issue : c'est plus rapide.
 
 ---
 

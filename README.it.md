@@ -1,14 +1,20 @@
+<div align="center">
+
 # 🛍️ CatalogFlow
 
-[🇬🇧 English](README.md) · **🇮🇹 Italiano** · [🇫🇷 Français](README.fr.md)
+**Tutto il catalogo Shopify in un'unica tabella — non un prodotto alla volta.**
 
-Web app **self-hosted** per gestire il **catalogo prodotti di Shopify** senza passare
-dall'admin prodotto per prodotto: tutto il catalogo in un'unica tabella, modifica singola o
-in blocco, sistemazione di taglie e varianti, pulizia immagini e accesso condiviso con un socio.
+Web app self-hosted pensata per negozi con centinaia o migliaia di prodotti: modifiche in blocco, taglie e varianti, pulizia immagini e un login per persona. Nessun abbonamento, nessun database, nessun dato che esce dal tuo server.
 
-**Licenza MIT.**
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](https://nodejs.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org) [![Shopify Admin API](https://img.shields.io/badge/Shopify-Admin%20API%202025--01-95BF47.svg)](docs/SHOPIFY-SETUP.it.md) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
----
+**[⚡ Installazione AI in 2 minuti](docs/AI-INSTALL-PROMPT.md)** · **[📖 Guida Shopify](docs/SHOPIFY-SETUP.it.md)** · **[🚀 Avvio rapido](#-avvio-rapido)** · **[🐳 Docker](#-docker-solo-se-lo-conosci-già)**
+
+[🇬🇧 English](README.md) · 🇮🇹 **Italiano** · [🇫🇷 Français](README.fr.md)
+
+![CatalogFlow — tutto il catalogo in un'unica tabella](docs/screenshots/hero-catalog.png)
+
+</div>
 
 ## ⚡⚡ Installazione in ~2 minuti (consigliata): lascia fare a Claude Code
 
@@ -275,6 +281,16 @@ scripts/            helper deploy Vercel
 | `npm` non riconosciuto su Windows | Node.js non è installato o il terminale va riaperto dopo l'installazione |
 
 Altri casi: [docs/SHOPIFY-SETUP.it.md → Problemi frequenti](docs/SHOPIFY-SETUP.it.md#-problemi-frequenti).
+
+---
+
+## 🤝 Contribuire
+
+Issue e pull request sono benvenute. Il bug report più utile dice cosa hai fatto, cosa ti
+aspettavi e il messaggio d'errore esatto (l'output del terminale o il riquadro rosso nel browser).
+
+Il progetto è volutamente piccolo — una sola app Next.js, senza livelli in più — quindi una patch
+è di solito poche righe. Per cose più grandi apri prima una issue: si fa prima.
 
 ---
 
