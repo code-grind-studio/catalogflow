@@ -10,6 +10,21 @@ in blocco, sistemazione di taglie e varianti, pulizia immagini e accesso condivi
 
 ---
 
+## ⚡⚡ Installazione in ~2 minuti (consigliata): lascia fare a Claude Code
+
+**Non fare i 15 minuti di passaggi a mano.** Apri **Claude Code** (o Cursor, Codex, Gemini CLI…)
+in una cartella vuota e incolla il prompt pronto: clona il progetto, installa le dipendenze,
+crea `.env.local`, avvia il server e ti guida nella creazione dell'app Shopify, chiedendoti
+solo le due cose che non può recuperare da solo (ID client e Secret).
+
+👉 **[Apri il prompt: docs/AI-INSTALL-PROMPT.md](docs/AI-INSTALL-PROMPT.md)** — copialo, incollalo,
+rispondi alle domande. Tempo tuo richiesto: ~2 minuti invece di 15.
+
+<i>Preferisci farlo a mano? Salta a [🚀 Avvio rapido](#-avvio-rapido) e poi a
+[🔌 Creare l'app Shopify](#-creare-lapp-shopify-una-volta).</i>
+
+---
+
 ## 👥 A chi serve (e a chi no)
 
 **Serve a chi ha un catalogo grande** — centinaia o migliaia di prodotti — e ha bisogno di
@@ -52,17 +67,6 @@ Non è un'app pubblica del Shopify App Store e non c'è nessun abbonamento.
 
 ---
 
-## ⚡ Installazione rapida con un agente AI (Claude Code, Cursor, Codex…)
-
-Il modo più veloce: **non fare i passaggi a mano**. Copia il prompt pronto e incollalo nel
-tuo agente AI dentro una cartella vuota — clona il progetto, installa le dipendenze, crea
-`.env.local`, avvia il server e ti guida nella creazione dell'app Shopify chiedendoti solo i
-due valori che non può recuperare da solo.
-
-👉 **[docs/AI-INSTALL-PROMPT.md](docs/AI-INSTALL-PROMPT.md)** — ~2 minuti di attenzione invece
-di 15 minuti di passaggi manuali.
-
----
 
 ## 🧰 Requisiti
 

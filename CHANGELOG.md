@@ -15,6 +15,8 @@ il versionamento segue [Semantic Versioning](https://semver.org/lang/it/).
 - Riquadri rossi numerati sugli screenshot della guida (evidenziano cosa cliccare).
 
 ### Modificato
+- L'installazione con agente AI è ora **in primo piano**: prima sezione dei README e avviso in
+  cima alle tre guide di configurazione (prima era a metà pagina).
 - Guide di configurazione: immagini con larghezza fissa (880px) invece che a piena pagina.
 - Docker declassato a opzione avanzata, con avviso esplicito di saltarla se non si conosce.
 

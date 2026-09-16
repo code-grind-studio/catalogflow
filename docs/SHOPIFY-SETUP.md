@@ -4,6 +4,12 @@
 
 ---
 
+> ⚡ **Want to skip the 15 minutes?** Let an AI agent do all of this (Claude Code, Cursor,
+> Codex…): open **[AI-INSTALL-PROMPT.md](AI-INSTALL-PROMPT.md)**, copy the prompt and answer its
+> questions. What follows is the **manual** version, step by step with screenshots.
+
+---
+
 **What this is:** CatalogFlow talks to the Shopify Admin API with an app's **Client ID + Secret**.
 
 You create the app once — about **15 minutes**, no coding — install it on your store, paste two

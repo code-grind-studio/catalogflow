@@ -4,6 +4,12 @@
 
 ---
 
+> ⚡ **Vous voulez sauter les 15 minutes ?** Laissez un agent IA faire tout cela (Claude Code,
+> Cursor, Codex…) : ouvrez **[AI-INSTALL-PROMPT.md](AI-INSTALL-PROMPT.md)**, copiez le prompt et
+> répondez à ses questions. Ce qui suit est la version **manuelle**, étape par étape avec captures.
+
+---
+
 **En bref :** CatalogFlow communique avec l'API Admin de Shopify via le **Client ID + Secret**
 d'une app.
 
