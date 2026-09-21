@@ -4,11 +4,13 @@
  * Il cookie contiene identità + firma HMAC (Web Crypto, compatibile sia con
  * l'Edge Runtime del proxy sia con le API route Node).
  *
- * La sessione NON scade: si resta dentro finché il cookie c'è. La revoca di un
- * accesso (dialog "Collaboratori") è quindi l'unico modo per far uscire
- * qualcuno: le API controllano a ogni richiesta che l'utente esista ancora
- * (vedi `userExists` in `./users`), così un collaboratore revocato perde
- * subito l'accesso anche con la sessione aperta.
+ * La sessione NON scade: si resta dentro finché il cookie c'è. Si esce in due
+ * modi: (1) la revoca di un accesso (dialog "Collaboratori") — le API controllano
+ * a ogni richiesta che l'utente esista ancora (vedi `userExists` in `./users`);
+ * (2) il logout, che incrementa l'epoca di sessione dell'utente (`./session-store`),
+ * invalidando ogni cookie emesso prima — anche quello copiato su un'altra macchina.
+ * L'epoca vive nello storage condiviso (Upstash): senza, resta in memoria e la
+ * revoca non è garantita fra istanze.
  *
  * Chi sono gli utenti (env var + collaboratori creati dalla UI) e la verifica
  * delle password stanno in `./users`: quel modulo usa Redis/fs ed è Node-only,
@@ -45,7 +47,7 @@ export function appCookieOptions() {
   };
 }
 
-/** Scadenza che significa "nessuna scadenza". */
+/** Scadenza che significa "nessuna scadenza" (il campo ora è l'epoca di sessione). */
 const NO_EXPIRY = 0;
 
 function secret(): string {
@@ -76,32 +78,34 @@ function timingSafeEqualHex(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/** Crea il valore del cookie: `<userId>.0.<firma>` (0 = nessuna scadenza). */
-export async function createSessionToken(user: UserIdentity): Promise<string> {
-  const payload = `${user.id}.${NO_EXPIRY}`;
+/** Crea il valore del cookie: `<userId>.<epoca>.<firma>`. */
+export async function createSessionToken(user: UserIdentity, epoca = NO_EXPIRY): Promise<string> {
+  const payload = `${user.id}.${epoca}`;
   return `${payload}.${await sign(payload)}`;
 }
 
 export interface Session {
   userId: string;
-  /** 0 = sessione senza scadenza. */
-  expiresAt: number;
+  /**
+   * Epoca di sessione al momento dell'emissione (0 = prima revoca mai fatta).
+   * Cambia al logout: vedi `sessioneAncoraValida` in `./session-store`.
+   */
+  epoca: number;
 }
 
 export async function verifySessionToken(token: string | undefined | null): Promise<Session | null> {
   if (!token) return null;
   const parts = token.split(".");
   if (parts.length !== 3) return null;
-  const [userId, expiresAtStr, sig] = parts;
-  const payload = `${userId}.${expiresAtStr}`;
+  const [userId, epocaStr, sig] = parts;
+  const payload = `${userId}.${epocaStr}`;
 
   const expected = await sign(payload);
   if (!timingSafeEqualHex(sig, expected)) return null;
 
-  const expiresAt = Number(expiresAtStr);
-  if (!Number.isFinite(expiresAt) || expiresAt < 0) return null;
-  // i cookie emessi prima di questa versione avevano una scadenza: la rispettiamo
-  if (expiresAt !== NO_EXPIRY && Date.now() >= expiresAt) return null;
+  const epoca = Number(epocaStr);
+  // prima la firma, poi la forma: un valore non numerico qui è un cookie manomesso
+  if (!Number.isInteger(epoca) || epoca < 0) return null;
 
-  return { userId, expiresAt };
+  return { userId, epoca };
 }

@@ -25,6 +25,8 @@ il versionamento segue [Semantic Versioning](https://semver.org/lang/it/).
 - Header di sicurezza su ogni risposta: `frame-ancestors` (CSP) limita l'incorporamento in iframe a PersonalOS — allargabile senza toccare il codice con la variabile d'ambiente `FRAME_ANCESTORS` — più `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, `Permissions-Policy` e niente intestazione `X-Powered-By`.
 - Dopo il login si può atterrare solo su percorsi interni: il parametro `next` di un link estraneo (`https://…`, `//…`, `/\…`) non porta più fuori dal catalogo.
 - Un nome di collaboratore che ripulirebbe allo stesso id di un accesso esistente (amministratore compreso, es. "Admin" con admin chiamato `admin`) viene rifiutato: un collaboratore non può più nascere con l'identità dell'admin.
+- Freno ai tentativi di password: dopo 10 errori dallo stesso indirizzo l'accesso resta in attesa 15 minuti (429 con tempo di attesa), ogni tentativo sbagliato finisce nel log attività; un accesso riuscito azzera il conteggio. Vive nello storage condiviso quando c'è, altrimenti nella memoria del processo.
+- Il logout revoca davvero la sessione: il cookie di sessione porta un'epoca (`<utente>.<epoca>.<firma>`) e il logout la incrementa, così il cookie — anche se copiato altrove — smette di funzionare su API e pagine. Richiede lo storage condiviso: senza, l'epoca resta 0 e il logout resta solo locale (nessun blocco, solo nessuna revoca).
 
 ### Modificato
 - Tutorial ripulito: un solo passo per ricerca e filtri, titoli più chiari, pannello più grande con barra di avanzamento e scorciatoie da tastiera; rimossi il passo introduttivo e quello finale.

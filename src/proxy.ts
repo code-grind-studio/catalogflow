@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
+import { sessioneAncoraValida } from "@/lib/session-store";
 
 /**
  * Guardia globale (Next 16: `proxy` al posto di `middleware`).
@@ -74,7 +75,10 @@ export default async function proxy(req: NextRequest) {
   }
 
   const token = req.cookies.get(SESSION_COOKIE)?.value;
-  if (await verifySessionToken(token)) {
+  const session = await verifySessionToken(token);
+  // firma valida non basta: il logout alza l'epoca di sessione dell'utente,
+  // quindi i cookie emessi prima — anche quelli copiati altrove — non valgono più
+  if (session && (await sessioneAncoraValida(session.userId, session.epoca))) {
     return NextResponse.next();
   }
 

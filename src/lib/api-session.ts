@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth";
+import { sessioneAncoraValida } from "@/lib/session-store";
 import { userExists } from "@/lib/users";
 
 /**
@@ -16,7 +17,9 @@ export async function activeSession() {
   const store = await cookies();
   const session = await verifySessionToken(store.get(SESSION_COOKIE)?.value);
   if (!session) return null;
-  return (await userExists(session.userId)) ? session : null;
+  if (!(await userExists(session.userId))) return null;
+  // e non deve essere una sessione chiusa da un logout (epoca superata)
+  return (await sessioneAncoraValida(session.userId, session.epoca)) ? session : null;
 }
 
 /** Risposta standard per sessione non valida o accesso revocato. */

@@ -10,6 +10,7 @@ export async function GET() {
     userId: session.userId,
     userLabel: await userLabel(session.userId),
     isAdmin: isAdmin(session.userId),
-    expiresAt: session.expiresAt,
+    // `epoca` = versione di sessione: cambia al logout (vedi lib/session-store)
+    epoca: session.epoca,
   });
 }
