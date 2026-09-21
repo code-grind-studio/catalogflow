@@ -33,6 +33,29 @@
   .animate-indeterminate-bar {
     animation: indeterminate-bar 1.1s ease-in-out infinite;
   }
+  /* Avvio: comparsa semplice del marchio — solo opacità, niente scorrimenti. */
+  @keyframes brand-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .animate-brand-fade {
+    animation: brand-fade 800ms ease-out both;
+  }
+  /* Tutorial: alone che pulsa sull'area evidenziata e riquadro che entra dal basso. */
+  @keyframes tour-pulse {
+    0%, 100% { opacity: 0.25; transform: scale(1); }
+    50% { opacity: 0.9; transform: scale(1.015); }
+  }
+  .animate-tour-pulse {
+    animation: tour-pulse 1.9s ease-in-out infinite;
+  }
+  @keyframes tour-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-tour-in {
+    animation: tour-in 220ms ease-out both;
+  }
 }
 
 @theme inline {

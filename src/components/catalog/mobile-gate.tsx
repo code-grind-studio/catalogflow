@@ -16,7 +16,7 @@ function isMobileLike(): boolean {
   return narrow || mobileUa;
 }
 
-export function MobileGate({ children }: { children: React.ReactNode }) {
+export function MobileGate({ catalogName, children }: { catalogName: string; children: React.ReactNode }) {
   const [blocked, setBlocked] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
@@ -37,8 +37,8 @@ export function MobileGate({ children }: { children: React.ReactNode }) {
         <div className="space-y-1.5">
           <h1 className="text-sm font-semibold">Disponibile solo da computer</h1>
           <p className="max-w-xs text-xs text-muted-foreground">
-            Il Catalogo CatalogFlow non è ancora ottimizzato per schermi piccoli o touch.
-            Apri questo link da un computer per gestire i prodotti.
+            Il catalogo <strong className="font-medium">{catalogName}</strong> non è ancora ottimizzato
+            per schermi piccoli o touch. Apri questo link da un computer per gestire i prodotti.
           </p>
         </div>
       </div>

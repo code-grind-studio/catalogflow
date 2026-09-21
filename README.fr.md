@@ -8,7 +8,7 @@ Une web app auto-hébergée pensée pour les boutiques de plusieurs centaines ou
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](https://nodejs.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org) [![Shopify Admin API](https://img.shields.io/badge/Shopify-Admin%20API%202025--01-95BF47.svg)](docs/SHOPIFY-SETUP.fr.md) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
-**[⚡ Installation IA en ~2 minutes](docs/AI-INSTALL-PROMPT.md)** · **[📖 Guide Shopify](docs/SHOPIFY-SETUP.fr.md)** · **[🚀 Démarrage rapide](#-démarrage-rapide)** · **[🐳 Docker](#-docker-seulement-si-vous-le-connaissez-déjà)**
+**[⚡ Installation IA en ~2 minutes](docs/AI-INSTALL-PROMPT.md)** · **[📖 Guide Shopify](docs/SHOPIFY-SETUP.fr.md)** · **[🚀 Démarrage rapide](#-démarrage-rapide)** · **[🐳 Docker](#-docker-seulement-si-vous-le-connaissez-déjà)** · **[📝 Changelog](CHANGELOG.md)**
 
 [🇬🇧 English](README.md) · [🇮🇹 Italiano](README.it.md) · 🇫🇷 **Français**
 
@@ -67,7 +67,13 @@ Ce n'est pas une app publique de l'App Store Shopify et il n'y a aucun abonnemen
 
 - **Metafields** — lit et écrit `custom.fornitore_url`, `custom.modello`, `custom.gruppo`.
 
-- **Multi-utilisateur par mot de passe** — jusqu'à 10 comptes définis dans les variables d'environnement, sans e-mail ni base de données.
+- **Tutoriel guidé** — un calque met en évidence une zone à la fois et explique les gestes ; il ne
+s'ouvre jamais tout seul : un avis à côté du bouton « Tutoriel » dans l'en-tête vous invite à
+l'ouvrir après chaque connexion, et il disparaît dès que vous le fermez (ou que vous ouvrez le
+tutoriel). Les dernières étapes utilisent de faux produits d'exemple : sélection rapide, modification
+d'un produit et modification groupée sont montrées sans toucher à votre catalogue.
+- **Multi-utilisateur par mot de passe** — le propriétaire dans les variables d'environnement, plus les
+collaborateurs que vous créez depuis l'interface (nom + mot de passe) : sans e-mail ni base d'utilisateurs.
 
 - **Journal d'activité** — qui a modifié quoi et quand (persistance Redis en option).
 
@@ -171,6 +177,27 @@ nouveau sur le `.bat`.
 
 ---
 
+## 🖥️ Icône sur le Bureau (macOS et Windows)
+
+Ouvrez CatalogFlow d'un double-clic, comme n'importe quelle application.
+
+**macOS** — créez l'app une seule fois :
+
+```bash
+bash scripts/mac/crea-app.command --desktop
+```
+
+`CatalogFlow.app` apparaît sur le Bureau, icône et nom compris. Double-clic : le serveur démarre, le
+navigateur s'ouvre, et quand vous fermez l'app le serveur s'arrête aussi. Glissez-la dans le Dock
+pour la garder là.
+
+**Windows** — double-cliquez sur **`Crea collegamento sul Desktop.bat`** : il place sur le Bureau le
+raccourci *CatalogFlow*, avec l'icône, qui lance `Avvia CatalogFlow.bat`.
+
+Les icônes sont dans `assets/icon/` (source SVG, `.icns` pour macOS, `.ico` pour Windows).
+
+---
+
 ## 🔌 Créer l'app Shopify (une fois)
 
 CatalogFlow s'authentifie avec un **Client ID + Secret**. L'app se crée dans le
@@ -206,9 +233,9 @@ Version courte : créez l'app → publiez une version avec les portées
 | `CATALOG_USER_1_LABEL` | ➖ non | nom affiché dans l'interface (par défaut : l'ID) |
 | `CATALOG_USER_2_ID` … `_10_` | ➖ non | autres utilisateurs, mêmes trois variables (`_ID`, `_PASSWORD`, `_LABEL`) |
 | `SESSION_SECRET` | ✅ oui | chaîne aléatoire signant le cookie de session (`openssl rand -hex 32`) |
-| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | ➖ non | identifiants REST Upstash Redis : conservent journal d'activité et progression d'import entre deux redémarrages |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | ➖ non | identifiants REST Upstash Redis : conservent journal d'activité, progression d'import et collaborateurs créés entre deux redémarrages (nécessaire pour héberger sur Vercel) |
 
-⏱️ La session dure **30 minutes**, puis le mot de passe est redemandé.
+⏱️ La session n'expire pas : vous restez connecté jusqu'à la révocation de l'accès — plus de reconnexion toutes les 30 minutes.
 
 ---
 

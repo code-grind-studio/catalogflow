@@ -8,7 +8,7 @@ A self-hosted web app for shops with hundreds or thousands of products: bulk edi
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](https://nodejs.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org) [![Shopify Admin API](https://img.shields.io/badge/Shopify-Admin%20API%202025--01-95BF47.svg)](docs/SHOPIFY-SETUP.md) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
-**[⚡ 2-minute AI install](docs/AI-INSTALL-PROMPT.md)** · **[📖 Shopify setup guide](docs/SHOPIFY-SETUP.md)** · **[🚀 Quick start](#-quick-start)** · **[🐳 Docker](#-docker-only-if-you-already-know-it)**
+**[⚡ 2-minute AI install](docs/AI-INSTALL-PROMPT.md)** · **[📖 Shopify setup guide](docs/SHOPIFY-SETUP.md)** · **[🚀 Quick start](#-quick-start)** · **[🐳 Docker](#-docker-only-if-you-already-know-it)** · **[📝 Changelog](CHANGELOG.md)**
 
 🇬🇧 **English** · [🇮🇹 Italiano](README.it.md) · [🇫🇷 Français](README.fr.md)
 
@@ -67,7 +67,13 @@ It's not a public Shopify App Store app and there is no subscription.
 
 - **Metafields** — reads and writes `custom.fornitore_url`, `custom.modello`, `custom.gruppo`.
 
-- **Multi-user, password only** — up to 10 accounts defined in env vars, no emails, no database.
+- **Guided tutorial** — an overlay highlights one area at a time and explains the gestures; it never
+opens by itself: a notice next to the "Tutorial" button in the header invites you to open it after
+every sign-in, and disappears as soon as you close it (or open the tutorial). The last steps run on
+fake demo products, so quick selection, single-product editing and bulk editing can be shown without
+touching your store.
+- **Multi-user, password only** — the owner in the env vars, plus the collaborators you create from
+the interface (name + password): no emails, no user database.
 
 - **Activity log** — who changed what, and when (optional Redis persistence).
 
@@ -170,6 +176,26 @@ again.
 
 ---
 
+## 🖥️ Icon on the Desktop (macOS and Windows)
+
+Open CatalogFlow with a double click, like any other app.
+
+**macOS** — build the app once:
+
+```bash
+bash scripts/mac/crea-app.command --desktop
+```
+
+`CatalogFlow.app` appears on the Desktop, icon and name included. Double-click it: the server starts,
+the browser opens, and when you close the app the server stops too. Drag it to the Dock to keep it there.
+
+**Windows** — double-click **`Crea collegamento sul Desktop.bat`**: it puts a *CatalogFlow* shortcut
+on the Desktop, with the icon, pointing at `Avvia CatalogFlow.bat`.
+
+The icons are in `assets/icon/` (SVG source, `.icns` for macOS, `.ico` for Windows).
+
+---
+
 ## 🔌 Create the Shopify app (once)
 
 CatalogFlow authenticates with a **Client ID + Client Secret**. You create the app in the
@@ -204,9 +230,9 @@ Short version: create the app → publish a version with the scopes
 | `CATALOG_USER_1_LABEL` | ➖ no | name shown in the interface (defaults to the ID) |
 | `CATALOG_USER_2_ID` … `_10_` | ➖ no | additional users, same three variables (`_ID`, `_PASSWORD`, `_LABEL`) |
 | `SESSION_SECRET` | ✅ yes | random string signing the session cookie (`openssl rand -hex 32`) |
-| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | ➖ no | Upstash Redis REST credentials: keeps the activity log and import progress across restarts |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | ➖ no | Upstash Redis REST credentials: keeps the activity log, the import progress and the collaborators you create across restarts (required to host on Vercel) |
 
-⏱️ Sessions last **30 minutes**, then the password is asked again.
+⏱️ Sessions don't expire: you stay logged in until the access is revoked — no re-login every 30 minutes.
 
 ---
 

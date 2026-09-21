@@ -1,6 +1,14 @@
+<div align="center">
+
 # 🔌 Shopify app setup — CatalogFlow
 
-**🇬🇧 English** · [🇮🇹 Italiano](SHOPIFY-SETUP.it.md) · [🇫🇷 Français](SHOPIFY-SETUP.fr.md)
+**13 steps, ~15 minutes, no coding.** Create the app in the Shopify Dev Dashboard, install it on your store, copy two values into `.env.local`.
+
+**[⬅️ Back to CatalogFlow](../README.md)** · **[⚡ Or let an AI agent do it](AI-INSTALL-PROMPT.md)** · **[🩺 Troubleshooting](#-troubleshooting)**
+
+🇬🇧 **English** · [🇮🇹 Italiano](SHOPIFY-SETUP.it.md) · [🇫🇷 Français](SHOPIFY-SETUP.fr.md)
+
+</div>
 
 ---
 

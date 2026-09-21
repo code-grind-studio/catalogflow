@@ -34,6 +34,8 @@ const ACTION_LABELS: Record<string, string> = {
   setMainImage: "Immagine principale",
   deleteImage: "Immagine eliminata",
   delete: "Eliminazione",
+  collaboratorCreate: "Nuovo accesso",
+  collaboratorDelete: "Accesso revocato",
 };
 
 /** Elenco espandibile dei prodotti coinvolti da un'azione di gruppo (bulk). */

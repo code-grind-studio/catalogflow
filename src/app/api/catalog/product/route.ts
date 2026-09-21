@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import { shopifyGql, assertNoUserErrors } from "@/lib/catalog/shopify";
 import { refreshProductsInCache, removeProductFromCache, loadCatalog, bulkEditProgress, deriveTipo } from "@/lib/catalog/catalog";
 import { pickSizeOption, detectFamily, classifySizeValue } from "@/lib/catalog/sizes";
 import { classify } from "@/lib/catalog/taxonomy";
-import { verifySessionToken, userLabel, SESSION_COOKIE } from "@/lib/auth";
+import { activeSession } from "@/lib/api-session";
+import { userLabel } from "@/lib/users";
 import { appendLog } from "@/lib/activity-log";
 
 export const runtime = "nodejs";
@@ -447,10 +447,52 @@ export async function POST(req: Request) {
   const action = body.action;
   if (!action) return NextResponse.json({ ok: false, error: "action mancante" }, { status: 400 });
 
-  const cookieStore = await cookies();
-  const session = await verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
-  const actorId = session?.userId ?? "sconosciuto";
-  const actorLabel = session ? userLabel(session.userId) : "Sconosciuto";
+  // la sessione non scade: qui si verifica anche che l'accesso esista ancora
+  const session = await activeSession();
+  if (!session) {
+    return NextResponse.json({ ok: false, error: "Accesso non valido: accedi di nuovo" }, { status: 401 });
+  }
+  const actorId = session.userId;
+  const actorLabel = await userLabel(session.userId);
+
+  /* --- prodotti di esempio del tutorial (id "demo-*") --------------------
+   * Non esistono su Shopify: vanno scartati QUI, prima di qualsiasi chiamata
+   * allo store. Se restano solo id finti la risposta è un finto successo (così
+   * le schermate del tutorial funzionano senza scrivere niente); se sono
+   * mescolati a prodotti veri si prosegue solo con quelli veri. */
+  const idsFinti = [
+    ...(typeof body.id === "string" ? [body.id] : []),
+    ...(typeof body.productId === "string" ? [body.productId] : []),
+    ...(Array.isArray(body.ids) ? (body.ids as string[]) : []),
+  ].filter((v) => typeof v === "string" && v.startsWith("demo-"));
+
+  if (idsFinti.length > 0) {
+    const tuttiFinti =
+      typeof body.id === "string" || typeof body.productId === "string"
+        ? idsFinti.length === 1
+        : idsFinti.length === (body.ids as string[]).length;
+
+    if (tuttiFinti) {
+      return NextResponse.json({
+        ok: true,
+        result:
+          action === "getOptions"
+            ? {
+                productId: idsFinti[0],
+                title: "Prodotto di esempio",
+                referencePrice: null,
+                variantCount: 1,
+                variantsTruncated: false,
+                size: null,
+                otherOptions: [],
+              }
+            : { demo: true, skipped: idsFinti },
+      });
+    }
+    if (Array.isArray(body.ids)) {
+      body.ids = (body.ids as string[]).filter((i) => !String(i).startsWith("demo-"));
+    }
+  }
 
   const logTargetId = typeof body.id === "string"
     ? body.id

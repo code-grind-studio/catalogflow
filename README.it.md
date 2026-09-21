@@ -8,7 +8,7 @@ Web app self-hosted pensata per negozi con centinaia o migliaia di prodotti: mod
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js 20+](https://img.shields.io/badge/node-%E2%89%A520-brightgreen.svg)](https://nodejs.org) [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org) [![Shopify Admin API](https://img.shields.io/badge/Shopify-Admin%20API%202025--01-95BF47.svg)](docs/SHOPIFY-SETUP.it.md) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
-**[⚡ Installazione AI in 2 minuti](docs/AI-INSTALL-PROMPT.md)** · **[📖 Guida Shopify](docs/SHOPIFY-SETUP.it.md)** · **[🚀 Avvio rapido](#-avvio-rapido)** · **[🐳 Docker](#-docker-solo-se-lo-conosci-già)**
+**[⚡ Installazione AI in 2 minuti](docs/AI-INSTALL-PROMPT.md)** · **[📖 Guida Shopify](docs/SHOPIFY-SETUP.it.md)** · **[🚀 Avvio rapido](#-avvio-rapido)** · **[🐳 Docker](#-docker-solo-se-lo-conosci-già)** · **[📝 Changelog](CHANGELOG.md)**
 
 [🇬🇧 English](README.md) · 🇮🇹 **Italiano** · [🇫🇷 Français](README.fr.md)
 
@@ -67,7 +67,13 @@ Non è un'app pubblica del Shopify App Store e non c'è nessun abbonamento.
 
 - **Metafield** — legge e scrive `custom.fornitore_url`, `custom.modello`, `custom.gruppo`.
 
-- **Multi-utente a password** — fino a 10 account definiti via env var, senza email né database.
+- **Tutorial guidato** — una sovrimpressione evidenzia un'area per volta e spiega i gesti; non si
+apre mai da solo: un avviso accanto al pulsante "Tutorial" nell'intestazione ti invita ad aprirlo
+dopo ogni accesso, e sparisce appena lo chiudi (o apri il tutorial). Gli ultimi passi girano su
+prodotti di esempio finti, così mostra selezione rapida, modifica prodotto e modifica di gruppo
+senza toccare il catalogo vero.
+- **Multi-utente a password** — il proprietario nelle env var, più i collaboratori che crei
+dall'interfaccia (nome + password): niente email, nessun database utenti.
 
 - **Log attività** — chi ha modificato cosa e quando (persistenza su Redis opzionale).
 
@@ -170,6 +176,26 @@ click sul `.bat`.
 
 ---
 
+## 🖥️ Icona sul Desktop (macOS e Windows)
+
+Apri CatalogFlow con un doppio click, come qualsiasi altra applicazione.
+
+**macOS** — crea l'app una volta sola:
+
+```bash
+bash scripts/mac/crea-app.command --desktop
+```
+
+Sul Desktop compare `CatalogFlow.app`, con icona e nome. Doppio click: parte il server, si apre il
+browser, e quando chiudi l'app si spegne anche il server. Trascinala sul Dock per tenerla lì.
+
+**Windows** — doppio click su **`Crea collegamento sul Desktop.bat`**: mette sul Desktop il
+collegamento *CatalogFlow*, con l'icona, che avvia `Avvia CatalogFlow.bat`.
+
+Le icone stanno in `assets/icon/` (sorgente SVG, `.icns` per macOS, `.ico` per Windows).
+
+---
+
 ## 🔌 Creare l'app Shopify (una volta)
 
 CatalogFlow si autentica con **Client ID + Secret**. L'app si crea nel **Dev Dashboard** di
@@ -204,9 +230,9 @@ Versione breve: crea l'app → pubblica una versione con gli scope
 | `CATALOG_USER_1_LABEL` | ➖ no | nome mostrato nell'interfaccia (default: l'ID) |
 | `CATALOG_USER_2_ID` … `_10_` | ➖ no | altri utenti, stesse tre variabili (`_ID`, `_PASSWORD`, `_LABEL`) |
 | `SESSION_SECRET` | ✅ sì | stringa casuale che firma il cookie di sessione (`openssl rand -hex 32`) |
-| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | ➖ no | credenziali REST Upstash Redis: mantengono log attività e stato import tra un riavvio e l'altro |
+| `KV_REST_API_URL` / `KV_REST_API_TOKEN` | ➖ no | credenziali REST Upstash Redis: mantengono log attività, stato import e collaboratori creati tra un riavvio e l'altro (necessarie per ospitare su Vercel) |
 
-⏱️ La sessione dura **30 minuti**, poi richiede di nuovo la password.
+⏱️ La sessione non scade: resti dentro finché l'accesso non viene revocato — niente più rientro ogni 30 minuti.
 
 ---
 

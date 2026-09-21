@@ -34,7 +34,7 @@ export function SelectionTray({
   if (products.length === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 border-t-2 border-accent bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
+    <div data-tour="tray" className="fixed bottom-0 left-0 right-0 z-40 border-t-2 border-accent bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="mx-auto max-w-[1800px] px-6 py-2.5">
         {/* riga comandi */}
         <div className="flex items-center gap-3">
@@ -45,13 +45,17 @@ export function SelectionTray({
             selezionat{products.length === 1 ? "o" : "i"}
           </span>
 
-          <Button variant="outline" size="sm" className="h-7 rounded-none text-xs" onClick={onBulkEdit}>
+          <Button data-tour="bulk-edit-btn" variant="outline" size="sm" className="h-7 rounded-none text-xs" onClick={onBulkEdit}>
             <Users className="size-3" /> Modifica di gruppo
           </Button>
 
-          <Button variant="ghost" size="sm" className="h-7 rounded-none text-xs" onClick={onSelectAll}>
+          <Button data-tour="select-all-btn" variant="ghost" size="sm" className="h-7 rounded-none text-xs" onClick={onSelectAll}>
             Seleziona tutti i {selectAllCount} filtrati
           </Button>
+
+          <span className="hidden text-[11px] text-muted-foreground sm:inline">
+            Trascina il mouse sopra le card per selezionare più prodotti al volo.
+          </span>
 
           <button
             onClick={() => setExpanded((v) => !v)}

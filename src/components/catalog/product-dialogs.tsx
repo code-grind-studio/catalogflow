@@ -3,7 +3,7 @@
 import * as React from "react";
 import {
   Trash2, Loader2, Check, ExternalLink, Link2, ImageOff, AlertTriangle, ChevronDown, X,
-  ArrowUpDown, MoreHorizontal,
+  ArrowUpDown, MoreHorizontal, FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { CatalogProduct, Facets } from "@/lib/catalog/catalog";
+import { isDemoProduct } from "@/lib/catalog/demo";
 import {
   SIZE_SCALES, scalesForFamily, scalesForCategoria, sortSizeValues, isSorted, missingFromScale,
   nextSizeSuggestions, groupProductsByScale, type ScaleGroup,
@@ -657,7 +658,11 @@ export function EditProductDialog({
   const [err, setErr] = React.useState<string | null>(null);
   const [images, setImages] = React.useState(product.images);
 
+  /** Prodotto di esempio del tutorial: nessuna modifica deve uscire da questa pagina. */
+  const demo = isDemoProduct(product);
+
   const run = async (label: string, body: Record<string, unknown>) => {
+    if (demo) return; // esempio: niente chiamate allo store
     setBusy(label);
     setErr(null);
     try {
@@ -671,6 +676,7 @@ export function EditProductDialog({
   };
 
   const saveAll = async () => {
+    if (demo) { onSaved(); return; } // esempio: si chiude senza scrivere niente
     setBusy("save");
     setErr(null);
     try {
@@ -720,20 +726,29 @@ export function EditProductDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="flex max-h-[92vh] w-[95vw] max-w-[1400px] flex-col overflow-hidden p-0 sm:max-w-[1400px]">
+      <DialogContent data-tour="edit-dialog" className="flex max-h-[92vh] w-[95vw] max-w-[1400px] flex-col overflow-hidden p-0 sm:max-w-[1400px]">
         <DialogHeader className="border-b border-border px-6 py-4">
           <DialogTitle className="text-base">{product.title}</DialogTitle>
           <DialogDescription className="flex items-center gap-3 text-xs">
             <span className="font-mono">{product.numericId}</span>
-            <a href={product.storefrontUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
-              Vedi sul sito <ExternalLink className="size-3" />
-            </a>
+            {!demo && (
+              <a href={product.storefrontUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:underline">
+                Vedi sul sito <ExternalLink className="size-3" />
+              </a>
+            )}
           </DialogDescription>
         </DialogHeader>
 
         {err && (
           <p className="mx-6 mt-4 flex items-start gap-2 border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive">
             <AlertTriangle className="mt-0.5 size-3.5 shrink-0" /> {err}
+          </p>
+        )}
+
+        {demo && (
+          <p className="mx-6 mt-4 flex items-start gap-2 border border-border bg-card/60 p-2 text-xs text-muted-foreground">
+            <FlaskConical className="mt-0.5 size-3.5 shrink-0" />
+            Prodotto di esempio del tutorial: quello che cambi qui non viene inviato a Shopify.
           </p>
         )}
 
@@ -1079,11 +1094,15 @@ export function BulkEditDialog({
 
   const ids = products.map((p) => p.id);
 
+  /** Se nella selezione ci sono prodotti di esempio del tutorial: non si scrive su Shopify. */
+  const demo = products.some((p) => isDemoProduct(p));
+
   const hasChanges = !!gruppo.trim() || !!brand.trim() || !!categoria || stagioni.length > 0 || !!status;
 
   const [saveProgress, setSaveProgress] = React.useState<{ done: number; total: number } | null>(null);
 
   const saveAll = async () => {
+    if (demo) { onDone(); return; } // esempio: si chiude senza scrivere niente
     setBusy(true);
     setErr(null);
     setSaveProgress({ done: 0, total: products.length });
@@ -1118,7 +1137,7 @@ export function BulkEditDialog({
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="flex max-h-[90vh] w-[90vw] max-w-[1100px] flex-col overflow-hidden p-0 sm:max-w-[1100px]">
+      <DialogContent data-tour="bulk-dialog" className="flex max-h-[90vh] w-[90vw] max-w-[1100px] flex-col overflow-hidden p-0 sm:max-w-[1100px]">
         <DialogHeader className="border-b border-border px-6 py-4">
           <DialogTitle className="text-base">Modifica di gruppo — {products.length} prodotti</DialogTitle>
           <DialogDescription className="text-xs">
@@ -1128,6 +1147,13 @@ export function BulkEditDialog({
 
         <div className="flex-1 space-y-5 overflow-y-auto p-6 thin-scrollbar">
           {err && <p className="text-xs text-destructive">{err}</p>}
+
+          {demo && (
+            <p className="flex items-start gap-2 border border-border bg-card/60 p-2 text-xs text-muted-foreground">
+              <FlaskConical className="mt-0.5 size-3.5 shrink-0" />
+              Prodotti di esempio del tutorial: nessuna modifica viene inviata a Shopify.
+            </p>
+          )}
 
           <div className="grid grid-cols-2 gap-5">
             <Field label="Imposta gruppo" className="col-span-2">

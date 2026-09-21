@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="CatalogFlow">
+  <title>CatalogFlow</title>
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c1c21"/>
+      <stop offset="1" stop-color="#09090b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- squircle di sfondo (stile icone macOS) -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#fondo)"/>
+
+  <!-- borsa: manico + corpo -->
+  <path d="M 404 406 a 108 108 0 0 1 216 0" fill="none" stroke="#f4f4f5" stroke-width="46" stroke-linecap="round"/>
+  <rect x="306" y="406" width="412" height="336" rx="54" fill="none" stroke="#f4f4f5" stroke-width="46"/>
+
+  <!-- righe del catalogo: due chiare, una attenuata -->
+  <rect x="392" y="512" width="240" height="32" rx="16" fill="#f4f4f5"/>
+  <rect x="392" y="592" width="240" height="32" rx="16" fill="#f4f4f5"/>
+  <rect x="392" y="672" width="150" height="32" rx="16" fill="#82828c"/>
+</svg>

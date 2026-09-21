@@ -10,11 +10,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { CatalogProduct, Facets } from "@/lib/catalog/catalog";
 import type { SuggestedGroup } from "@/lib/catalog/groups";
+import { DEMO_BRAND, DEMO_PRODUCTS } from "@/lib/catalog/demo";
 import { SENZA_CATEGORIA } from "@/lib/catalog/taxonomy";
 import { EditProductDialog, DeleteProductDialog, BulkEditDialog } from "./product-dialogs";
 import { ProductCard } from "./product-card";
 import { SelectionTray } from "./selection-tray";
 import { LazySection } from "./lazy-section";
+import { TourHost } from "./tour";
 
 /* ------------------------------------------------------------------- tipi */
 
@@ -56,12 +58,30 @@ function ModelliCount({ items }: { items: CatalogProduct[] }) {
 
 /* ==================================================================== UI */
 
+/**
+ * Avvio: durata minima della schermata col marchio. La barra completa la sua
+ * unica passata in questo tempo (o più, se il catalogo ci mette di più) e il
+ * contatore dei prodotti avanza con lei.
+ */
+const STARTUP_MIN_MS = 2000;
+
 export function CatalogView() {
   const [data, setData] = React.useState<CatalogResponse | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [refreshing, setRefreshing] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [progress, setProgress] = React.useState<{ loaded: number; estimatedTotal: number } | null>(null);
+  /** Avvio: percentuale della barra (monotona: va solo avanti) e fine schermata. */
+  const [barPct, setBarPct] = React.useState(0);
+  /** Prodotti "scorsi" finora nell'animazione (0 → totale). */
+  const [prodotti, setProdotti] = React.useState(0);
+  const [startupDone, setStartupDone] = React.useState(false);
+  /** Istante d'avvio: riempito nell'effetto, non durante il render (niente Date.now() nel render). */
+  const startupRef = React.useRef({ start: 0 });
+
+  React.useEffect(() => {
+    startupRef.current = { start: Date.now() };
+  }, []);
 
   const [query, setQuery] = React.useState("");
   const [brandFilter, setBrandFilter] = React.useState("");
@@ -78,7 +98,7 @@ export function CatalogView() {
   const [bulkOpen, setBulkOpen] = React.useState(false);
   const [bulkPresetProducts, setBulkPresetProducts] = React.useState<CatalogProduct[] | null>(null);
   const [reloadKey, setReloadKey] = React.useState(0);
-  const [cols, setCols] = React.useState<number>(6);
+  const [cols, setCols] = React.useState<number>(10);
 
   /** Sezioni brand chiuse (il resto è aperto di default). */
   const [collapsedBrands, setCollapsedBrands] = React.useState<Set<string>>(new Set());
@@ -101,6 +121,47 @@ export function CatalogView() {
   }, []);
 
   /**
+   * Avvio: barra e contatore sono UNA cosa sola, sempre in sincrono.
+   *  - finché non sappiamo quanto manca, la barra avanza lentamente (non arriva mai a fondo);
+   *  - quando il caricamento è in corso, barra e numero seguono il progresso reale;
+   *  - quando è finito, la passata completa fino al bordo destro in almeno 2s;
+   *  - a barra piena (e durata minima passata) si passa al catalogo.
+   */
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      const elapsed = Date.now() - startupRef.current.start;
+
+      const total = progress?.estimatedTotal || data?.products.length || 0;
+      const loaded = progress?.loaded ?? 0;
+      const inCorso = !!progress && progress.estimatedTotal > 0 && loaded < progress.estimatedTotal;
+
+      let pct: number;
+      if (inCorso && total > 0) {
+        pct = (loaded / total) * 100; // progresso reale
+      } else if (loading) {
+        pct = Math.min(30, (elapsed / 1000) * 15); // non sappiamo ancora: avanzo lento
+      } else {
+        pct = (elapsed / STARTUP_MIN_MS) * 100; // caricamento finito: passata finale
+      }
+      pct = Math.min(99, Math.max(pct, barPct)); // mai indietro; 100 solo alla fine
+      setBarPct(pct);
+
+      // numero agganciato alla barra: scorre con lei, in tempo reale
+      if (total > 0) setProdotti(Math.round((total * pct) / 100));
+
+      if (!loading && elapsed >= STARTUP_MIN_MS) {
+        if (barPct < 100) {
+          setBarPct(100);
+          setProdotti(total);
+          return;
+        }
+        setStartupDone(true);
+      }
+    }, 100);
+    return () => clearInterval(id);
+  }, [barPct, data, loading, progress]);
+
+  /**
    * Altezza stimata di una sezione (per i placeholder delle sezioni non ancora
    * montate). Se la stima è bassa la pagina "cresce" durante lo scroll; la
    * calcoliamo dalla larghezza reale della card alle colonne attive.
@@ -118,8 +179,9 @@ export function CatalogView() {
   React.useEffect(() => {
     const saved = typeof window !== "undefined" ? window.localStorage.getItem("sd_cols") : null;
     const n = Number(saved);
+    // solo le due densità previste: 10 o 12 per riga
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (n >= 2 && n <= 12) setCols(n);
+    if (n === 10 || n === 12) setCols(n);
   }, []);
   React.useEffect(() => {
     if (typeof window !== "undefined") window.localStorage.setItem("sd_cols", String(cols));
@@ -189,7 +251,19 @@ export function CatalogView() {
 
   /* ------------------------------------------------------------ filtri */
 
-  const products = data?.products ?? [];
+  /* Prodotti di esempio del tutorial: compaiono solo mentre gira il tutorial
+     (evento "catalogflow:esempi") e non vengono mai inviati a Shopify. */
+  const [showDemo, setShowDemo] = React.useState(false);
+  React.useEffect(() => {
+    const onEsempi = (e: Event) => setShowDemo(Boolean((e as CustomEvent<{ on?: boolean }>).detail?.on));
+    window.addEventListener("catalogflow:esempi", onEsempi);
+    return () => window.removeEventListener("catalogflow:esempi", onEsempi);
+  }, []);
+
+  const products = React.useMemo(
+    () => (showDemo ? [...DEMO_PRODUCTS, ...(data?.products ?? [])] : (data?.products ?? [])),
+    [showDemo, data]
+  );
 
   /** Modelli disponibili: dipendono dal BRAND scelto (categoria = brand, sottocategoria = modello). */
   const modelOptions = React.useMemo(() => {
@@ -274,6 +348,10 @@ export function CatalogView() {
       })
       // "senza brand" sempre in fondo, il resto alfabetico italiano
       .sort((a, b) => {
+        // la sezione dei prodotti di esempio (tutorial) sta sempre in cima
+        const aDemo = a.brand === DEMO_BRAND;
+        const bDemo = b.brand === DEMO_BRAND;
+        if (aDemo !== bDemo) return aDemo ? -1 : 1;
         const aNone = a.brand.startsWith("—");
         const bNone = b.brand.startsWith("—");
         if (aNone !== bNone) return aNone ? 1 : -1;
@@ -419,33 +497,39 @@ export function CatalogView() {
     }));
   };
 
-  if (loading) {
-    const hasTotal = !!progress && progress.estimatedTotal > 0;
-    const pct = hasTotal
-      ? Math.min(100, Math.round((progress!.loaded / progress!.estimatedTotal) * 100))
-      : 0;
+  if (!startupDone || loading) {
+    const totale = progress?.estimatedTotal || data?.products.length || 0;
     return (
-      <div className="flex h-64 flex-col items-center justify-center gap-3 px-6 text-sm text-muted-foreground">
-        <p>Carico il catalogo da Shopify…</p>
-        <div className="relative h-1.5 w-64 overflow-hidden bg-muted">
-          {hasTotal ? (
-            <div
-              className="h-full bg-foreground transition-[width] duration-300 ease-out"
-              style={{ width: `${pct}%` }}
-            />
-          ) : (
-            // primo avvio dopo un riavvio del server: non conosciamo ancora il totale,
-            // quindi mostriamo un segmento che scorre invece di una barra ferma allo 0%
-            <div className="absolute inset-y-0 w-1/4 bg-foreground/70 animate-indeterminate-bar" />
-          )}
+      // schermata d'avvio a tutto schermo: copre anche l'intestazione e la barra
+      // account, così resta solo il marchio, centrato in orizzontale e verticale
+      <div data-startup="1" className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-14 bg-background px-6">
+        <div className="animate-brand-fade flex flex-col items-center text-center">
+          <span className="text-6xl font-semibold tracking-tight text-foreground sm:text-7xl">
+            CatalogFlow
+          </span>
+          <span className="mt-4 text-sm text-muted-foreground">by Code Grind Studio</span>
         </div>
-        <p className="text-[11px] tabular-nums text-muted-foreground">
-          {progress
-            ? progress.estimatedTotal > 0
-              ? `${progress.loaded} / ${progress.estimatedTotal} prodotti`
-              : `${progress.loaded} prodotti`
-            : "avvio…"}
-        </p>
+
+        <div className="flex flex-col items-center gap-3">
+          {/* una sola passata, da sinistra a destra: quando tocca il bordo il catalogo è pronto */}
+          <div className="h-[3px] w-72 overflow-hidden bg-muted">
+            <div
+              className="h-full bg-foreground transition-[width] duration-150 ease-linear"
+              style={{ width: `${barPct}%` }}
+            />
+          </div>
+          <p className="text-xs tabular-nums text-muted-foreground">
+            Caricamento dei prodotti
+            {totale > 0 && (
+              <>
+                {" · "}
+                <span className="text-foreground">{prodotti.toLocaleString("it-IT")}</span>
+                {" / "}
+                {totale.toLocaleString("it-IT")}
+              </>
+            )}
+          </p>
+        </div>
       </div>
     );
   }
@@ -465,7 +549,7 @@ export function CatalogView() {
     <div className="space-y-4">
       {/* ============ intestazione FISSA: tab + filtri restano sempre visibili ============ */}
       <div className="sticky top-0 z-30 -mx-6 border-b border-border bg-background/95 px-6 py-2 backdrop-blur supports-[backdrop-filter]:bg-background/85">
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div data-tour="filtri" className="flex flex-wrap items-center gap-1.5">
             <div className="relative" title="Cerca per nome, brand, modello o tag">
               <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -561,13 +645,12 @@ export function CatalogView() {
                 value={String(cols)}
                 onChange={(v) => setCols(Number(v))}
               >
-                <option value="6">6 per riga</option>
-                <option value="8">8 per riga</option>
                 <option value="10">10 per riga</option>
                 <option value="12">12 per riga</option>
               </FilterSelect>
 
               <Button
+                data-tour="vista"
                 variant={brandGridView ? "secondary" : "outline"}
                 size="sm"
                 className="h-7 gap-1 rounded-none px-2 text-[11px]"
@@ -641,6 +724,7 @@ export function CatalogView() {
               >
                 {/* intestazione sezione brand: barra grigia a tutta larghezza, cliccabile per chiudere/aprire */}
                 <button
+                  data-tour="brand"
                   onClick={() => toggleBrand(brand)}
                   title={collapsed ? "Apri questa sezione" : "Comprimi questa sezione"}
                   className="mb-3 flex w-full items-center gap-2 bg-card px-3 py-2 text-left transition-colors hover:bg-muted"
@@ -777,6 +861,9 @@ export function CatalogView() {
           onSelectAll={selectAllVisible}
         />
       )}
+
+      {/* tutorial guidato: si apre da solo ad ogni accensione del server */}
+      <TourHost />
     </div>
   );
 }

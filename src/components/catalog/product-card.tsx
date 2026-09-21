@@ -5,6 +5,7 @@ import { ImageOff, AlertTriangle, Link2, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { CatalogProduct } from "@/lib/catalog/catalog";
 import { groupColor } from "@/lib/catalog/groups";
+import { isDemoProduct } from "@/lib/catalog/demo";
 
 function priceLabel(p: CatalogProduct): string {
   if (!p.priceMin) return "—";
@@ -39,9 +40,12 @@ export function ProductCard({
   const color = p.gruppo ? groupColor(p.gruppo) : null;
   const main = p.images.find((i) => i.isMain) ?? p.images[0];
   const isOff = p.status !== "ACTIVE";
+  /** Prodotto di esempio del tutorial: non esiste su Shopify, niente link al sito. */
+  const demo = isDemoProduct(p);
 
   return (
     <div
+      data-tour={demo ? "demo-card" : "card"}
       className={cn(
         "group relative flex flex-col border bg-card transition-colors duration-100",
         selected ? "border-accent" : "border-border hover:border-border/60"
@@ -62,7 +66,7 @@ export function ProductCard({
           "absolute top-2 left-2 z-10 flex size-5 items-center justify-center rounded-full border-2 transition-colors duration-100",
           selected
             ? "border-foreground bg-foreground opacity-100"
-            : selectionMode
+            : selectionMode || demo
               ? "border-white/90 bg-black/20 opacity-100"
               : "border-white/90 bg-black/20 opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
         )}
@@ -107,22 +111,31 @@ export function ProductCard({
 
       {/* corpo card */}
       <div className="flex flex-1 flex-col gap-1.5 bg-card p-3">
+        {demo && (
+          <span className="w-fit border border-border px-1 py-0.5 text-[9px] tracking-wide text-muted-foreground uppercase">
+            esempio
+          </span>
+        )}
         <div className="flex items-start justify-between gap-1.5">
-          {/* nome: click = apri il prodotto sul sito pubblico */}
-          <a
-            href={p.storefrontUrl}
-            target="_blank"
-            rel="noreferrer"
-            title={`Apri "${p.title}" sul sito`}
-            className="line-clamp-2 text-left text-xs leading-snug hover:underline"
-          >
-            {p.title}
-            {p.brands.length > 1 && (
-              <span className="ml-1 text-[10px] text-muted-foreground" title={`Collab: ${p.brands.join(" x ")}`}>
-                ({p.brands.join(" x ")})
-              </span>
-            )}
-          </a>
+          {/* nome: click = apri il prodotto sul sito pubblico (gli esempi del tutorial non hanno un sito) */}
+          {demo ? (
+            <span className="line-clamp-2 text-left text-xs leading-snug">{p.title}</span>
+          ) : (
+            <a
+              href={p.storefrontUrl}
+              target="_blank"
+              rel="noreferrer"
+              title={`Apri "${p.title}" sul sito`}
+              className="line-clamp-2 text-left text-xs leading-snug hover:underline"
+            >
+              {p.title}
+              {p.brands.length > 1 && (
+                <span className="ml-1 text-[10px] text-muted-foreground" title={`Collab: ${p.brands.join(" x ")}`}>
+                  ({p.brands.join(" x ")})
+                </span>
+              )}
+            </a>
+          )}
           {p.fornitoreUrl && (
             <a
               href={p.fornitoreUrl} target="_blank" rel="noreferrer"

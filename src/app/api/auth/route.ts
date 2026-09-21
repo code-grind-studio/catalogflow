@@ -1,26 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkPassword, createSessionToken, SESSION_COOKIE, SESSION_TTL_MS } from "@/lib/auth";
+import { checkPassword } from "@/lib/users";
+import {
+  appCookieOptions,
+  createSessionToken,
+  SESSION_COOKIE,
+  TOUR_NOTICE_COOKIE,
+} from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => null)) as { password?: string } | null;
   const password = body?.password ?? "";
 
-  const user = checkPassword(password);
+  const user = await checkPassword(password);
   if (!user) {
     return NextResponse.json({ ok: false, error: "Password errata" }, { status: 401 });
   }
 
   const res = NextResponse.json({ ok: true, user });
-  res.cookies.set(SESSION_COOKIE, await createSessionToken(user), {
-    httpOnly: true,
-    // SameSite=None richiede Secure: su http (dev locale) va rifiutato dal browser
-    // se combinato così. In sviluppo usiamo Lax (basta, stesso sito), in produzione
-    // (sempre https) None+Secure per compatibilità con eventuali iframe/proxy.
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    path: "/",
-    maxAge: Math.floor(SESSION_TTL_MS / 1000),
-  });
+  res.cookies.set(SESSION_COOKIE, await createSessionToken(user), appCookieOptions());
+  // avviso del tutorial: riscritto a ogni accesso, così ricompare accanto al
+  // pulsante "Tutorial" una volta per accesso (non a ogni ricarica)
+  res.cookies.set(TOUR_NOTICE_COOKIE, "1", appCookieOptions());
   return res;
 }
 

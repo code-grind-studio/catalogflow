@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { loadCatalog, computeFacets, invalidateCatalogCache } from "@/lib/catalog/catalog";
 import { suggestGroups } from "@/lib/catalog/groups";
+import { activeSession, unauthorized } from "@/lib/api-session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +15,9 @@ export const dynamic = "force-dynamic";
  * Il token Shopify resta server-side: il browser non lo vede mai.
  */
 export async function GET(req: Request) {
+  // la sessione non scade: se l'accesso è stato revocato, qui si resta fuori
+  if (!(await activeSession())) return unauthorized();
+
   const { searchParams } = new URL(req.url);
   const refresh = searchParams.get("refresh") === "1";
   const withSuggestions = searchParams.get("suggest") === "1";

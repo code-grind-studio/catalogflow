@@ -1,45 +1,52 @@
 /**
  * Sessione a password condivisa per-utente (niente account/email):
  * ogni collaboratore ha la propria password, il sistema sa chi è.
- * Il cookie contiene identità + scadenza, firmati con HMAC (Web Crypto,
- * compatibile sia con l'Edge Runtime del proxy sia con le API route Node).
- * Nessun DB di sessioni: scade sempre dopo SESSION_TTL_MS dal login.
+ * Il cookie contiene identità + firma HMAC (Web Crypto, compatibile sia con
+ * l'Edge Runtime del proxy sia con le API route Node).
  *
- * Utenti e password configurabili via env var, in terzine:
- *   CATALOG_USER_1_ID / CATALOG_USER_1_LABEL / CATALOG_USER_1_PASSWORD
- *   CATALOG_USER_2_ID / CATALOG_USER_2_LABEL / CATALOG_USER_2_PASSWORD
- *   ... fino a CATALOG_USER_10 (aumenta MAX_USERS qui sotto se ne servono di più)
- * Basta impostare l'utente 1 per avere un solo login (l'admin/proprietario).
- * Per condividere l'accesso con un socio: aggiungi la sua terzina di env var
- * (ID a piacere, LABEL = il nome che vedrà lui, PASSWORD scelta da te) e
- * ridistribuisci la coppia ID/PASSWORD a lui — niente email/account, solo
- * la password gli basta per entrare col suo nome.
- * Si cambiano solo nelle env var (locale: .env.local — produzione: pannello
- * del provider di hosting, es. Vercel → Settings → Environment Variables),
- * niente UI di self-service, niente database.
+ * La sessione NON scade: si resta dentro finché il cookie c'è. La revoca di un
+ * accesso (dialog "Collaboratori") è quindi l'unico modo per far uscire
+ * qualcuno: le API controllano a ogni richiesta che l'utente esista ancora
+ * (vedi `userExists` in `./users`), così un collaboratore revocato perde
+ * subito l'accesso anche con la sessione aperta.
+ *
+ * Chi sono gli utenti (env var + collaboratori creati dalla UI) e la verifica
+ * delle password stanno in `./users`: quel modulo usa Redis/fs ed è Node-only,
+ * mentre qui resta solo la parte di sessione, che gira anche nel middleware.
  */
 
+import type { UserIdentity } from "./users";
+
 export const SESSION_COOKIE = "catalog_session";
-export const SESSION_TTL_MS = 30 * 60 * 1000; // 30 minuti
 
-export interface UserIdentity {
-  id: string;
-  label: string;
+/**
+ * Cookie dell'avviso del tutorial: "1" = mostralo, "0" = chiuso.
+ * Sta nel browser (non sul server) perché in produzione questo progetto NON ha
+ * Redis: un file/stato server non durerebbe, mentre il cookie sopravvive alle
+ * riaccensioni dell'istanza, come la sessione.
+ */
+export const TOUR_NOTICE_COOKIE = "catalogflow_tour";
+
+/** Cookie "per sempre": 10 anni, così il browser non lo butta via. */
+export const SESSION_COOKIE_MAX_AGE_S = 10 * 365 * 24 * 60 * 60;
+
+/**
+ * Attributi comuni ai cookie dell'app (sessione e avviso del tutorial).
+ * SameSite=None richiede Secure: in produzione (https) serve per far funzionare
+ * l'app anche dentro un iframe; in sviluppo bastano same-site/Lax.
+ */
+export function appCookieOptions() {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
+    path: "/",
+    maxAge: SESSION_COOKIE_MAX_AGE_S,
+  };
 }
 
-const MAX_USERS = 10;
-
-function knownUsers(): Record<string, UserIdentity & { password: string | undefined }> {
-  const users: Record<string, UserIdentity & { password: string | undefined }> = {};
-  for (let i = 1; i <= MAX_USERS; i++) {
-    const id = process.env[`CATALOG_USER_${i}_ID`];
-    const password = process.env[`CATALOG_USER_${i}_PASSWORD`];
-    if (!id || !password) continue;
-    const label = process.env[`CATALOG_USER_${i}_LABEL`] ?? id;
-    users[id] = { id, label, password };
-  }
-  return users;
-}
+/** Scadenza che significa "nessuna scadenza". */
+const NO_EXPIRY = 0;
 
 function secret(): string {
   const s = process.env.SESSION_SECRET;
@@ -69,34 +76,15 @@ function timingSafeEqualHex(a: string, b: string): boolean {
   return diff === 0;
 }
 
-function timingSafeEqualStr(a: string, b: string): boolean {
-  const pa = a.padEnd(64, "\0");
-  const pb = b.padEnd(64, "\0");
-  return timingSafeEqualHex(
-    [...pa].map((c) => c.charCodeAt(0).toString(16).padStart(4, "0")).join(""),
-    [...pb].map((c) => c.charCodeAt(0).toString(16).padStart(4, "0")).join("")
-  );
-}
-
-/** Verifica la password e restituisce l'identità corrispondente, se valida. */
-export function checkPassword(input: string): UserIdentity | null {
-  for (const u of Object.values(knownUsers())) {
-    if (u.password && timingSafeEqualStr(input, u.password)) {
-      return { id: u.id, label: u.label };
-    }
-  }
-  return null;
-}
-
-/** Crea il valore del cookie: `<userId>.<scadenzaMs>.<firma>` */
+/** Crea il valore del cookie: `<userId>.0.<firma>` (0 = nessuna scadenza). */
 export async function createSessionToken(user: UserIdentity): Promise<string> {
-  const expiresAt = Date.now() + SESSION_TTL_MS;
-  const payload = `${user.id}.${expiresAt}`;
+  const payload = `${user.id}.${NO_EXPIRY}`;
   return `${payload}.${await sign(payload)}`;
 }
 
 export interface Session {
   userId: string;
+  /** 0 = sessione senza scadenza. */
   expiresAt: number;
 }
 
@@ -111,11 +99,9 @@ export async function verifySessionToken(token: string | undefined | null): Prom
   if (!timingSafeEqualHex(sig, expected)) return null;
 
   const expiresAt = Number(expiresAtStr);
-  if (!Number.isFinite(expiresAt) || Date.now() >= expiresAt) return null;
+  if (!Number.isFinite(expiresAt) || expiresAt < 0) return null;
+  // i cookie emessi prima di questa versione avevano una scadenza: la rispettiamo
+  if (expiresAt !== NO_EXPIRY && Date.now() >= expiresAt) return null;
 
   return { userId, expiresAt };
-}
-
-export function userLabel(userId: string): string {
-  return knownUsers()[userId]?.label ?? userId;
 }

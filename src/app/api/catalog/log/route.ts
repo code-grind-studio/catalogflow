@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readLog } from "@/lib/activity-log";
+import { activeSession, unauthorized } from "@/lib/api-session";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  if (!(await activeSession())) return unauthorized();
+
   const { searchParams } = new URL(req.url);
   const limit = Math.min(Number(searchParams.get("limit") ?? 200), 500);
   const offset = Math.max(Number(searchParams.get("offset") ?? 0), 0);
